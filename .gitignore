@@ -16,9 +16,9 @@ exdata.pdf
 
 # Assignments
 # ===========
-*/assignment.R
-*/.Rhistory
+*assignment.R
+*.Rhistory
 
 # Heavy data files
 # ================
-./exploratory_data/week1/household_power_consumption.txt
+exploratory_data/week1/household_power_consumption.txt
