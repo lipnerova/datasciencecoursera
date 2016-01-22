@@ -12,3 +12,13 @@ Thumbs.db
 # Misc
 # ====
 rprogramming.pdf
+exdata.pdf
+
+# Assignments
+# ===========
+*/assignment.R
+*/.Rhistory
+
+# Heavy data files
+# ================
+./exploratory_data/week1/household_power_consumption.txt
