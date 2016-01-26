@@ -16,9 +16,11 @@ exdata.pdf
 
 # Assignments
 # ===========
-*assignment.R
+*prv*
 *.Rhistory
+courses/
 
 # Heavy data files
 # ================
-exploratory_analysis/week1/household_power_consumption.txt
+02_RProgramming/assigments/week2/specdata
+04_ExploratoryAnalysis/assigments/week1/household_power_consumption.txt
