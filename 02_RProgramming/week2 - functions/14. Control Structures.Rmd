@@ -1,0 +1,145 @@
+
+# IF, ELSE: testing a condition
+
+```r
+
+x <- runif(1, 0, 10)
+
+if (x > 3) 
+  y <- 10
+}
+else {
+  y <- 0
+}
+
+-or-
+
+y <- if (x > 3) {
+  10
+} 
+else { 
+  0
+}
+
+```
+
+
+
+## FOR: execute a loop a fixed number of times 
+
+```r
+
+x <- c("a", "b", "c", "d")
+
+for (i in 1:4) {
+  print(x[i])
+}
+ 
+-or-
+
+for (i in seq_along (x)) {
+  print(x[i])
+}
+
+-or-
+
+for (letter in x) {
+  print(letter)
+}
+
+
+-or-
+for (i in 1:4) print (x[i])
+
+```
+
+```r
+
+x <- matrix(1:6, 2, 3)
+
+for (i in seq_len (nrow(x))) {
+  for (j in seq_len (ncol(x))) {
+    print (x[i, j])
+  }   
+}
+
+```
+
+`next` is used to skip an iteration of a loop
+
+```r
+
+for (i in 1:100) {
+
+  if (i <= 20) {
+    ## Skip the first 20 iterations
+    next 
+  }
+  
+  ## Do something here
+  
+}
+
+```
+
+
+
+## WHILE: execute a loop _while_ a condition is true 
+
+
+```r
+
+count <- 0
+
+while (count < 10) {
+  print (count)
+  count <- count + 1
+}
+
+```
+
+```r
+
+z <- 5
+
+while (z >= 3 && z <= 10) {
+
+  print (z)
+  coin <- rbinom (1, 1, 0.5)
+        
+  if(coin == 1) {  ## random walk
+    z <- z + 1
+  } 
+  else {
+    z <- z - 1
+  } 
+  
+}
+
+```
+
+
+
+## REPEAT: execute an infinite loop (must `break` out of it to stop)
+
+```r
+
+x0 <- 1
+tol <- 1e-8
+
+repeat {
+
+  x1 <- computeEstimate()
+        
+  if (abs (x1 - x0) < tol) { # close enough ?
+    break
+  }
+  else {
+    x0 <- x1
+  } 
+  
+}
+
+```
+
+This loop is a bit dangerous because there is no guarantee it will stop. Better to set a hard limit on the number of iterations (e.g. using a for loop) and then report whether convergence was achieved or not.

@@ -1,0 +1,79 @@
+
+## split: takes a vector or other objects and splits it into groups determined by a factor or list of factors
+
+`split` takes three arguments: 
+(1) `x` is a vector (or list) or data frame;
+(2) `f` is a factor (or coerced to one) or a list of factors;
+(3) `drop` indicates whether empty factors levels should be dropped (`FALSE` by default)
+
+A common use-case is to split a data structure into subsets & apply a function to these subsets. The results are then aggregated in a vector (map-reduce in other languages). 
+
+
+```r
+# we use gl() to "generate levels" in a factor variable
+gl(2, 8, labels = c("Control", "Treat"))
+
+x <- c(rep(1, 10), rep(1, 10), rep(1, 10))
+f <- gl(3, 1)
+
+split(x, f)
+lapply(split(x, f), sum)
+```
+
+
+## Splitting a Data Frame
+
+```r
+# library that provides sample data frames
+library(datasets)
+
+head(airquality)
+
+s <- split(airquality, airquality$Month)
+str (s)
+ 
+lapply (s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")]))
+sapply (s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")])) 
+sapply (s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")], na.rm = TRUE))
+```
+
+
+## Splitting on More than One Level
+
+We can do this by creating an interaction of the variables with the interaction() function.
+
+
+```r
+x <- 1:10
+f1 <- gl(2, 5)
+f2 <- gl(5, 2)
+f1
+f2
+interaction(f1, f2) # the longer object length has to be a multiple of the shorter object length
+
+str(split(x, list(f1, f2)))              # some of the levels are empty
+str(split(x, list(f1, f2), drop = TRUE)) # the empty levels can be dropped
+```
+
+---
+
+## tapply: apply a function over subsets of a vector
+
+It can be thought of as a combination of `split()` and `sapply()` for vectors only.
+
+`tapply` takes five arguments:
+(1) `X` is a vector;
+(2) `INDEX` is a factor or a list of factors (or else they are coerced to factors);
+(3) `FUN` is a function to be applied - `NULL` by default;
+(4) ... contains other arguments to be passed `FUN`;
+(5) `simplify`, should we simplify the result? `` by default;
+
+
+```r
+x <- c(rep(1, 10), rep(2, 10), 1:10)
+f <- gl(3, 10)
+tapply(x, f, mean)
+tapply(x, f, mean, simplify = FALSE)
+
+tapply(x, f, range)
+```

@@ -11,7 +11,7 @@
 # ---------- SETUP THE WORKING DIRECTORY ---------------------------------------------- #
 
 # setup the working directory
-setwd('.\\r_programming')
+setwd('.\\02_RProgramming')
 
 # install dplyr
 myPackage <- 'dplyr'
@@ -22,7 +22,7 @@ library (dplyr)
 # ---------- FIRST GLANCE ------------------------------------------------------------- #
 
 # load the file
-chicago <- readRDS ("chicago.rds")
+chicago <- readRDS ("assets/chicago.rds")
 head (chicago)
 
 # display dim sizes
