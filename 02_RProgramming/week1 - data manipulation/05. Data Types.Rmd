@@ -312,18 +312,20 @@ Factors are used to represent categorical data. Factors can be unordered or orde
 ## Factors
 
 ```r
-> x <- factor(c("yes", "yes", "no", "yes", "no")) 
-> x
+x <- factor(c("yes", "yes", "no", "yes", "no")) 
+x
 [1] yes yes no yes no
 Levels: no yes
-> table(x) 
+table(x) 
 x
 no yes 
  2   3
-> unclass(x)
+unclass(x)
 [1] 2 2 1 2 1
 attr(,"levels")
 [1] "no"  "yes"
+
+?unclass
 ```
 
 ---

@@ -7,20 +7,22 @@ ehthumbs.db
 Icon?
 Thumbs.db
 
+*.Rhistory
+*.RData
 
-
-# Misc
-# ====
+# Books
+# =====
+artofdatascience.pdf
 rprogramming.pdf
 exdata.pdf
 
 # Assignments
 # ===========
 *prv*
-*.Rhistory
 courses/
 
 # Heavy data files
 # ================
 02_RProgramming/assignments/week2/specdata
+02_RProgramming/assignments/week4/*.csv
 04_ExploratoryAnalysis/assignments/week1/household_power_consumption.txt
