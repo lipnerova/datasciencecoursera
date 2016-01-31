@@ -61,7 +61,7 @@ png (file = "plot6.png", height=540, width = 540)
   mtext(expression(bold("Evolution of motors-related PM2.5 emissions\nBaltimore City VS Los Angeles, 1999 - 2008")), outer = TRUE, cex=1.2)
   
   plot.new()
-  legend (x="center", ncol=2, legend=c('Baltimore', 'Los Angeles'), lty=2, pch=c(19, 1), col=c('red3', 'black'))
+  legend (x="center", ncol=2, legend=c('Baltimore', 'Los Angeles'), lty=1, pch=c(19, 1), col=c('red3', 'black'))
   
 dev.off() 
 
