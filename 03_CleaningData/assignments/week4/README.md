@@ -50,7 +50,7 @@ The script included in **run_analysis.R** tidy up the data with the following st
 + We apply `grep` to return a 1\*561 vector of TRUE/FALSE values: does the feature label include mean() or std() ?
 + We use this vector to:
   + create a character vector that includes every label we keep
-	+ identify which columns we load in step.2
+  + identify which columns we load in step.2
 	
 *Note: we use mean() instead of mean to exclude meanFreq() from our loaded data.*
 	

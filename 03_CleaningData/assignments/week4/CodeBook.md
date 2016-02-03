@@ -140,7 +140,7 @@ Additional vectors were obtained by averaging the signals in a signal window sam
 + tBodyAccJerkMean
 + tBodyGyroMean
 + tBodyGyroJerkMean
-+ X, ,Y, Z
++ X, Y, Z
 
 Variable      |  -  | Description
 ------------- | --: | :---------------------------------------------------------------------------
