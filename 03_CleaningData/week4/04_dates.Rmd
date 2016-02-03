@@ -60,7 +60,7 @@ class(d2)
 ```{r ,dependson="sysDate"}
 format(d2,"%a %b %d")
 ```
-
+?as.Date
 ---
 
 ## Creating dates
@@ -87,6 +87,7 @@ julian(d2)
 ## Lubridate 
 
 ```{r lub}
+install.packages('lubridate')
 library(lubridate); ymd("20140108")
 mdy("08/04/2013")
 dmy("03-04-2013")

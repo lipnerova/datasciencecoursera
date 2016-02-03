@@ -44,10 +44,10 @@ knit_hooks$set(plot = knitr:::hook_plot_html)
 ## Getting the data from the web
 
 ```{r getData}
-if(!file.exists("./data")){dir.create("./data")}
+if(!file.exists("..\\assets")){dir.create("..\\assets")}
 fileUrl <- "https://data.baltimorecity.gov/api/views/k5ry-ef3g/rows.csv?accessType=DOWNLOAD"
-download.file(fileUrl,destfile="./data/restaurants.csv",method="curl")
-restData <- read.csv("./data/restaurants.csv")
+download.file(fileUrl,destfile="..\\assets\\restaurants.csv",method="curl")
+restData <- read.csv("..\\assets\\restaurants.csv")
 ```
 
 
@@ -153,6 +153,7 @@ restData[restData$zipCode %in% c("21212","21213"),]
 data(UCBAdmissions)
 DF = as.data.frame(UCBAdmissions)
 summary(DF)
+str
 ```
 
 
@@ -171,6 +172,7 @@ xt
 ## Flat tables
 
 ```{r wb}
+str (warpbreaks)
 warpbreaks$replicate <- rep(1:9, len = 54)
 xt = xtabs(breaks ~.,data=warpbreaks)
 xt

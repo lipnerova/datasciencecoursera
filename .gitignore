@@ -25,6 +25,10 @@ courses/
 # ================
 02_RProgramming/assignments/week2/specdata
 02_RProgramming/assignments/week4/*.csv
+
+03_CleaningData/assignments/week3/data
+03_CleaningData/assignments/week4/data
+
 04_ExploratoryAnalysis/assets/pm25_data/*.txt
 04_ExploratoryAnalysis/assignments/week1/household_power_consumption.txt
 04_ExploratoryAnalysis/assignments/week4/data

@@ -45,10 +45,10 @@ knit_hooks$set(plot = knitr:::hook_plot_html)
 ## Fixing character vectors - tolower(), toupper()
 
 ```{r getData}
-if(!file.exists("./data")){dir.create("./data")}
+if(!file.exists("..\\assets")){dir.create("..\\assets")}
 fileUrl <- "https://data.baltimorecity.gov/api/views/dz54-2aru/rows.csv?accessType=DOWNLOAD"
-download.file(fileUrl,destfile="./data/cameras.csv",method="curl")
-cameraData <- read.csv("./data/cameras.csv")
+download.file(fileUrl,destfile="..\\assets\\cameras.csv",method="curl")
+cameraData <- read.csv("..\\assets\\cameras.csv")
 names(cameraData)
 tolower(names(cameraData))
 ```
@@ -100,6 +100,7 @@ mylist[[1]]
 * Important parameters: _X_,_FUN_
 
 ```{r,dependson="splitNames"}
+splitNames[[6]]
 splitNames[[6]][1]
 firstElement <- function(x){x[1]}
 sapply(splitNames,firstElement)
@@ -124,9 +125,9 @@ sapply(splitNames,firstElement)
 ```{r reviewDownload, cache=TRUE}
 fileUrl1 <- "https://dl.dropboxusercontent.com/u/7710864/data/reviews-apr29.csv"
 fileUrl2 <- "https://dl.dropboxusercontent.com/u/7710864/data/solutions-apr29.csv"
-download.file(fileUrl1,destfile="./data/reviews.csv",method="curl")
-download.file(fileUrl2,destfile="./data/solutions.csv",method="curl")
-reviews <- read.csv("./data/reviews.csv"); solutions <- read.csv("./data/solutions.csv")
+download.file(fileUrl1,destfile="..\\assets\\reviews.csv",method="curl")
+download.file(fileUrl2,destfile="..\\assets\\solutions.csv",method="curl")
+reviews <- read.csv("..\\assets\\reviews.csv"); solutions <- read.csv("..\\assets\\solutions.csv")
 head(reviews,2)
 head(solutions,2)
 ```
@@ -161,6 +162,7 @@ gsub("_","",testName)
 grep("Alameda",cameraData$intersection)
 table(grepl("Alameda",cameraData$intersection))
 cameraData2 <- cameraData[!grepl("Alameda",cameraData$intersection),]
+cameraData2
 ```
 
 ---
