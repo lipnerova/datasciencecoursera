@@ -9,15 +9,15 @@ the The Johns Hopkins University **Data Science Specialization** courses on Cour
 
 Tidy up data collected from the accelerometers of Samsung Galaxy S smartphone. 
 
-### 1. Filter the raw data
+##### 1. Filter the raw data
 + Merge training & data sets
 + Keep only mean & standard deviation for each measurement
 
-### 2. Use descriptive names
+##### 2. Use descriptive names
 + Use descriptive names for the activities in the dataset
 + Use a descriptive name for the dataset
 
-### 3. Create overview subset
+##### 3. Create overview subset
 + Create a second dataset with the average of each variable for each activity and each subject
 + Use rules #2
 
@@ -32,3 +32,10 @@ Tha data comes from the publicly available [UCI Machine Learning Repository](htt
 
 ## Files
 
+This repository includes the following files:
+
++ README.md
++ run_analysis.R: script that tidy up the raw data into a clean, ready to use dataset. see 'Goal' for more info.
++ CodeBook.md: describes all the variables, the data, and any transformations or work performed to clean up the data.
+
+Please Note that the raw data is not included in the repository. The download link can be found in 'Sources'.
