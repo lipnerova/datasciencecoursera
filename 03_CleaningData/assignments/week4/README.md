@@ -15,7 +15,6 @@ Tidy up data collected from the accelerometers of Samsung Galaxy S smartphone.
 
 ##### 2. Use descriptive names
 + Use descriptive names for the activities in the dataset
-+ Use a descriptive name for the dataset
 
 ##### 3. Create overview subset
 + Create a second dataset with the average of each variable for each activity and each subject
@@ -39,3 +38,53 @@ This repository includes the following files:
 + CodeBook.md: describes all the variables, the data, and any transformations or work performed to clean up the data.
 
 Please Note that the raw data is not included in the repository. The download link can be found in 'Sources'.
+
+
+## Data Analysis
+
+The script included in **run_analysis.R** tidy up the data with the following steps:
+
+#### 1. Identify the features to keep
+
++ We load 'features.txt', which indicates the index & label of each of the 561 features.
++ We apply `grep` to return a 1\*561 vector of TRUE/FALSE values: does the feature label include mean() or std() ?
++ We use this vector to:
+  + create a character vector that includes every label we keep
+	+ identify which columns we load in step.2
+	
+*Note: we use mean() instead of mean to exclude meanFreq() from our loaded data.*
+	
+	
+#### 2. Load both training & test sets
+
+We apply the same method for both datasets:
+
++ We load 'X_dataset.txt', with only its relevant columns (faster than dropping unwanted columns afterwards)
++ We load 'y_dataset.txt' & 'subject_dataset.txt'
++ We merge the three datasets using `cbind`
+
+
+#### 3. Merge the two sets, rename columns, add activity names
+
++ We merge test set & training set using `rbind`
++ We apply the character vector created in step.1 to the columns names
++ We load 'activity_labels.txt', which indicate the index & label of each of the 6 activities
++ We merge the activity_labels & our complete dataset using `merge`
+
+The **fullSet** dataframe is now ready to use. 
+
+*Note:* 
++ *we do not forget to append names for the columns that appeared during the merge.*
++ *we drop all the temporary files to tidy our dataspace.*
+
+
+#### 4. Create a dataframe with the average of each variable for each activity and each subject 
+
+We use the reshape2 library to create the new dataframe from our fullSet:
+
++ We `melt` all our fullSet variables, except the subjects & activities
++ We calculate the variables means for each couple subject/activity using `dcast`
+
+The **fullSetAvg** dataframe is now ready to use. 
+
+
