@@ -99,4 +99,8 @@ We use the reshape2 library to create the new dataframe from our fullSet:
 
 The **fullSetAvg** dataframe is now ready to use. 
 
+#### 5. Export the fullSetAvg in a .txt files
 
++ Finally, we create **fullSetAverage.txt** directly from the fullSetAvg data frame.
+
+*Note: we export it without the row names for a cleaner file*
