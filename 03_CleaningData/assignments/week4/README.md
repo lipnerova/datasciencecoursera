@@ -34,13 +34,21 @@ Tha data comes from the publicly available [UCI Machine Learning Repository](htt
 This repository includes the following files:
 
 + README.md
-+ run_analysis.R: script that tidy up the raw data into a clean, ready to use dataset. see 'Goal' for more info.
++ run_analysis.R: script that tidy up the raw data into a clean, ready to use dataset. see 'Data Analysis' below for more info.
 + CodeBook.md: describes all the variables, the data, and any transformations or work performed to clean up the data.
 
-Please Note that the raw data is not included in the repository. The download link can be found in 'Sources'.
+The **featureInfo** directory includes:
+
++ activity_label.txt: link between id & label for each of the six measured activities
++ features.txt: the list of all 561 features measured during the experiments 
++ features_info.txt: the decription of each feature. A cleaner description is available in the CodeBook.md
+
+*Note: the raw data is not included in the repository. The download link can be found in 'Sources'.*
 
 
 ## Data Analysis
+
+_Note: for a better understanding of data, please refer to the **Code Book**._
 
 The script included in **run_analysis.R** tidy up the data with the following steps:
 
