@@ -65,5 +65,5 @@ fullSetMelt <- melt(fullSet,id=c("subject","activity_label"))
 fullSetAvg <- dcast (fullSetMelt, subject + activity_label ~ variable, mean)
 rm (fullSetMelt)
 
-print (str (fullSetAvg))
+write.table(fullSetAvg, ".\\fullSetAverage.txt", sep="\t", row.names = FALSE)
 

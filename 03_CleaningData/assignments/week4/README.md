@@ -52,6 +52,10 @@ _Note: for a better understanding of data, please refer to the **Code Book**._
 
 The script included in **run_analysis.R** tidy up the data with the following steps:
 
+#### 0. Download & unzip source files
+
++ We download & unzip the source files in the '.\data' directory
+
 #### 1. Identify the features to keep
 
 + We load 'features.txt', which indicates the index & label of each of the 561 features.
