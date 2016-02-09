@@ -1,0 +1,88 @@
+
+#### Vectors
+
++ R has five atomic classes of objects: ```character```, ```complex```, ```numeric```, ```integer```, ```logical```.
++ R most basic object is a ```vector```, which can only have **one class** of elements.
+Mixing classes results in **coercion**. 
++ Explicit coercion: use ```as.class (vector)```. Can introduce ```NAs```
++ Implicit coercion: the default order is above, starting with ```character```
+
+_Note: ```TRUE``` is replaced by ```"TRUE"```, ```1+0i```, ```1```, ```1L```_
+
++ Populating an empty vector created with ```vector (class, length)``` is faster than 
+doing both tasks at once using ```x:y (for integer sequences)``` or ```c (values)```.
+
+
+#### Matrices
+
++ Matrices are vectors with a ```dim``` attribute, constructed column-wise
++ ```matrix(values, nrow = x, ncol = y)```
++ ```dim (vector) <- c(nrow, ncol)``` changes a vector/matrix dimensions
++ ```cbind (vector1, vector2)``` merges two vectors/matrices column-wise
++ ```rbind (vector1, vector2)``` merges two vectors/matrices row-wise
+
+_Note: dimensions must match or R will return an error_
+_Note: matrices are vectors, so are also subject to coercion_
+
++ ```as.vector (matrix)``` deconstruct a matrix column-wise
+	
+	
+#### Factors
+
++ Factors are integer vectors with **labels**, called ```levels```
++ ```attr (myFactor, "levels")``` returns a vector with all the unique levels
++ ```table (myFactor)``` returns the count of each level
++ ```unclass (myFactor)``` returns the numerical vector w/o levels
++ ```droplevels (myFactor)``` removes unused levels _(ex: after subsetting)_
+
+_Note: levels can be ordered by using ```table (myFactor, levels = c(level1, level2, ...))```_
+
+
+#### Lists
+
++ Lists are vectors that can contain elements of **different classes**
++ ```unlist (myList)``` coerces a list back to a vector
+
+
+#### Data Frames
+
++ Data frames are used to store tubular data
++ They are lists where every element (column) has the same length (number of rows)
++ They can be converted to matrices with ```data.matrix (myDataFrame)```
+
+
+#### Names
+
++ ```names (myVector / myList) <- myNamesVector```
++ ```dimnames (myMatrix) <- list (rowNamesVector, colNamesVector)```
++ ```colnames (myDataFrame) <- myNamesVector```
++ ```row.names (myDataFrame) <- myNamesVector``` _values must be unique; using NULL resets the values_
+
+#### Subsetting
+
++ `[`  always returns an object of the same class as the original. Can select multiple elements.
++ `[[` extracts elements from a list or data frame. 
++ `$`  extracts elements from a list or data frame, by name. 
+
+
+##### Examples
+
++ ```myVector [posVector]``` returns a subvector
++ ```mymatrix [rowPosVector, colPosVector]``` returns a submatrix 
+
+_Note: when subsetting a single column or a single row, using ```drop = FALSE``` will return a matrix_
+
++ ```myList [posVector]``` returns a sublist
++ ```myList [[posVector]]``` navigates nested elements. ```list$pos``` can be used as well.
+
+_Note: the double bracket notation is mandatory for computed indices_
+
+
+##### Conditional subsetting
+
++ ```myVector [logicalVector]``` returns a subvector of indices where logicalVector = TRUE
++ ```myDataFrame [logicalVector, colVector]``` returns a sub-dataframe
+
+Removing NA values from a data frame:
++ ```> good <- complete.cases(myDataFrame)```
++ ```> myDataFrame[good, ]```
