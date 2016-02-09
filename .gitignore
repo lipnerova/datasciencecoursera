@@ -10,16 +10,21 @@ Thumbs.db
 *.Rhistory
 *.RData
 
+
 # Books
 # =====
 artofdatascience.pdf
 rprogramming.pdf
 exdata.pdf
 
+
 # Assignments
 # ===========
 *prv*
 courses/
+statisticalCourses/
+practice/
+
 
 # Heavy data files
 # ================
