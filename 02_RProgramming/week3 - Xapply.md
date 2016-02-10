@@ -1,30 +1,37 @@
 
-#### Scoping & Free variables
+#### lapply & sapply
 
-All variables used in a function but neither passed as arguments nor assigned inside the 
-function body are called **free variables**.
+It will **apply a function on each element of a list.**
 
-R uses **lexical scoping**: it searches values of free variables in the environment in
-which the function was defined, not in which it was called.
- 
-The search goes up the environment tree until the top-level environment, then down the
-`search` list until the empty environment. If a value has not been found then, an error is returned.
++ `lapply (myList, FUN, ...)`: returns a list
++ `sapply (myList, FUN, ...)`: returns a vector or matrix when all computed elements have the same length
 
-##### Examples
+_Note: ... arguments are passed to FUN_
+
+
+#### split
+
+It will **create subsets of a data structure using a factor or list of factors.**
 
 ```
-y <- 10
-
-f <- function (x) {
-        y <- 2
-        y^2 + g(x)
-}
-
-g <- function (x) {
-        x*y
-}
+library(datasets)
+s <- split(airquality, list(airquality$Month, airquality$Day)) #returns a list of sub-dataframes
+t(sapply (s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")], na.rm = TRUE))) #returns the colmMeans for each subset as a matrix
 ```
 
-`f (3)` returns `34`:
-+ `y^2` returns `2^2 = 4`
-+ `g(x)` returns `3*10 = 30`
+#### apply
+
+It will **apply a function over the margins of an array.** Usually used to apply a function to the rows or columns of a matrix.
+
+`apply (myArray, myMarginVector, myFun, ...)` 
+
+
+#### tapply
+
+It is a **combination of `split()` and `sapply()` for vectors only.**
+
+`tapply (myVector, myFactorList, myFun, ..., simplify = TRUE)` 
+
+#### mapply
+
+It is a **Multivariate version of `lapply`.**
