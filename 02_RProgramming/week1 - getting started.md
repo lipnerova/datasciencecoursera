@@ -58,6 +58,16 @@ _Note: levels can be ordered by using ```table (myFactor, levels = c(level1, lev
 + ```colnames (myDataFrame) <- myNamesVector```
 + ```row.names (myDataFrame) <- myNamesVector``` _values must be unique; using NULL resets the values_
 
+#### Dates & Times
+
++ Dates, represented by the `Date` class, measure the number of days since 1970-01-01
++ Times, represented by the `POSIXct` and `POSIXlt` class, measure the number of seconds since 1970-01-01
+
+  + ```POSIXct``` is a large integer
+  + ```POSIXlt``` is a list that includes day of the week, day of the year, etc.
+
++ `strptime`, `as.Date`, `as.POSIXlt`, `as.POSIXct` can be used to coerce a string into a Date/Time format.
+
 #### Subsetting
 
 + `[`  always returns an object of the same class as the original. Can select multiple elements.

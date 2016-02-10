@@ -12,12 +12,19 @@ The search goes up the environment tree until the top-level environment, then do
 
 ##### Examples
 
-+ ```> y <- 10```>
-+ ```> f <- function (x) { 
-+ ```      y <- 2
-+ ```      y^2 + g(x)
-+ ```> }```
-  
-+ ```> g <- function (x) { 
-+ ```      x*y
-+ ```> }```
+```
+y <- 10
+
+f <- function (x) {
+        y <- 2
+        y^2 + g(x)
+}
+
+g <- function (x) {
+        x*y
+}
+```
+
+`f (3)` returns `34`:
++ `y^2` returns `2^2 = 4`
++ `g(x)` returns `3*10 = 30`
