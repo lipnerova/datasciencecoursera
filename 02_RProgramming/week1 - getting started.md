@@ -85,4 +85,4 @@ _Note: the double bracket notation is mandatory for computed indices_
 
 Removing NA values from a data frame:
 + ```> good <- complete.cases(myDataFrame)```
-+ ```> myDataFrame[good, ]```
++ ```> myDataFrame[good, ]``` _returns a dataframe_
