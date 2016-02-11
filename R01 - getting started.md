@@ -34,6 +34,7 @@ _Note: matrices are vectors, so are also subject to coercion_
 + ```table (myFactor)``` returns the count of each level
 + ```unclass (myFactor)``` returns the numerical vector w/o levels
 + ```droplevels (myFactor)``` removes unused levels _(ex: after subsetting)_
++ ```factor (myVector)``` converts a vector into a factor
 
 _Note: levels can be ordered by using ```table (myFactor, levels = c(level1, level2, ...))```_
 
@@ -58,7 +59,7 @@ _Note: levels can be ordered by using ```table (myFactor, levels = c(level1, lev
 + ```colnames (myDataFrame) <- myNamesVector```
 + ```row.names (myDataFrame) <- myNamesVector``` _values must be unique; using NULL resets the values_
 
-#### Dates & Times - 02W1
+#### Dates & Times - 02W1 & 03W4
 
 + Dates, represented by the `Date` class, measure the number of days since 1970-01-01
 + Times, represented by the `POSIXct` and `POSIXlt` class, measure the number of seconds since 1970-01-01
@@ -68,7 +69,7 @@ _Note: levels can be ordered by using ```table (myFactor, levels = c(level1, lev
 
 + `strptime`, `as.Date`, `as.POSIXlt`, `as.POSIXct` can be used to coerce a string into a Date/Time format.
 
-#### Subsetting - 02W1
+#### Subsetting - 02W1 & 03W3
 
 + `[`  always returns an object of the same class as the original. Can select multiple elements.
 + `[[` extracts elements from a list or data frame. 
@@ -96,3 +97,8 @@ _Note: the double bracket notation is mandatory for computed indices_
 Removing NA values from a data frame:
 + ```> good <- complete.cases(myDataFrame)```
 + ```> myDataFrame[good, ]``` _returns a dataframe_
+
+#### Sorting & Ordering - 03W3
+
++ `sort (myVector, decreasing = FALSE, na.last = NA)`
++ `myDataFrame [order (myDataFrame$myCol1, myDataFrame$myCol2), ]`

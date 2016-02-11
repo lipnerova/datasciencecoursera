@@ -6,10 +6,13 @@
 + They can be converted to matrices with ```data.matrix (myDataFrame)```
 
 
+
 #### Names - 02W1
 
 + ```colnames (myDataFrame) <- myNamesVector```
 + ```row.names (myDataFrame) <- myNamesVector``` _values must be unique; using NULL resets the values_
+
+
 
 #### Subsetting - 02W1 & 03W3
 
@@ -19,6 +22,7 @@
 
 We can subset a data frame in several ways:
 
++ `split (myDataFrame, list (myDataFrame$var1, myDataFrame$var2))` # can be used with sapply
 + `myDataFrame [logicalVector, colVector]`
 + `myDataFrame [which(logicalVector), colVector]` exclude NA values _(`which` values are TRUE)
 + `myDataFrame [condition1 & condition2 | condition3, colVector]`
@@ -35,16 +39,65 @@ Removing NA values from a data frame:
 
 
 
-##### Examples
+#### Ordering - 03W3
 
-+ ```myList [posVector]``` returns a sublist
-+ ```myList [[posVector]]``` navigates nested elements. ```list$pos``` can be used as well.
-
-_Note: the double bracket notation is mandatory for computed indices_
++ `myDataFrame [order (myDataFrame$myCol1, myDataFrame$myCol2, na.last = TRUE, decreasing = FALSE), ]`
 
 
-##### Conditional subsetting
 
-+ ```myVector [logicalVector]``` returns a subvector of indices where logicalVector = TRUE
+#### Adding rows & columns - 03W3
+
++ `myDataFrame$newVar <- ifelse(myDataFrame$oldVar < 0, TRUE, FALSE)`
++ `cbind (dataFrame1, dataFrame2)`
++ `rbind (dataFrame1, dataFrame2)`
 
 
+
+#### Merging data frames - 03W3
+
++ `merge(df_x, df_y, by.x="col_name_x",by.y="col_name_y", all=TRUE)`
+
+_Note: all to include x/y values missing in y/x_
+
+#### Frequencies & Crosstabs - 03W3
+
+_More info ([here](http://www.statmethods.net/stats/frequencies.html)_
+
+Frequency table
+
+```
+mytable <- table(df$A, df$B, useNA = 'ifany') # A will be rows, B will be columns
+margin.table(mytable, 1) # frequency table of A values (summed over B) 
+margin.table(mytable, 2) # frequency table of B values (summed over A)
+
+prop.table(mytable) # cell percentages
+prop.table(mytable, 1) # row percentages 
+prop.table(mytable, 2) # column percentages
+
+mytable <- ftable (table(df$A, df$B, df$C) # A & B will be rows, C will be columns
+``` 
+
+Crosstabulation tables
+
+```
+mytable <- xtabs(c(A, B)~C+D+E, data=mydata) # frequencies of A & B, summed over C,D,E
+ftable(mytable) # print table 
+```
+
+#### Pivot tables as data frames
+
+First step is to **melt** the dataframe. The columns of all measured variables will be 
+converted in two columns:
+
++ variable, listing the column names
++ value, listing the value of each variable for each id.vars 
+
+```
+library (reshape2)
+meltedDF <- melt(df, id.vars = idVector, measure.vars = varVector)
+dcast (meltedDF, pivotVar1 ~ pivotVar2 ~ pivotVar3, aggregate.fun, value = valueColName)
+```
+
+_Note: the **aggregate function** is used when a combination of pivot variables identifies
+ more than one row. Its input must be a **numeric** vector and its output must have the
+ **same length** regardless of input size._
