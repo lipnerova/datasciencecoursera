@@ -1,5 +1,5 @@
 
-#### lapply & sapply
+#### lapply & sapply - 02W3
 
 It will **apply a function on each element of a list.**
 
@@ -9,7 +9,7 @@ It will **apply a function on each element of a list.**
 _Note: ... arguments are passed to FUN_
 
 
-#### split
+#### split - 02W3
 
 It will **create subsets of a data structure using a factor or list of factors.**
 
@@ -19,14 +19,14 @@ s <- split(airquality, list(airquality$Month, airquality$Day)) #returns a list o
 t(sapply (s, function(x) colMeans(x[, c("Ozone", "Solar.R", "Wind")], na.rm = TRUE))) #returns the colmMeans for each subset as a matrix
 ```
 
-#### apply
+#### apply - 02W3
 
 It will **apply a function over the margins of an array.** Usually used to apply a function to the rows or columns of a matrix.
 
 `apply (myArray, myMarginVector, myFun, ...)` 
 
 
-#### tapply
+#### tapply - 02W3
 
 It is a **combination of `split()` and `sapply()` for vectors only.**
 

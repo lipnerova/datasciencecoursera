@@ -1,5 +1,5 @@
 
-#### Vectors
+#### Vectors - 02W1
 
 + R has five atomic classes of objects: ```character```, ```complex```, ```numeric```, ```integer```, ```logical```.
 + R most basic object is a ```vector```, which can only have **one class** of elements.
@@ -13,7 +13,7 @@ _Note: ```TRUE``` is replaced by ```"TRUE"```, ```1+0i```, ```1```, ```1L```_
 doing both tasks at once using ```x:y (for integer sequences)``` or ```c (values)```.
 
 
-#### Matrices
+#### Matrices - 02W1
 
 + Matrices are vectors with a ```dim``` attribute, constructed column-wise
 + ```matrix(values, nrow = x, ncol = y)```
@@ -27,7 +27,7 @@ _Note: matrices are vectors, so are also subject to coercion_
 + ```as.vector (matrix)``` deconstruct a matrix column-wise
 	
 	
-#### Factors
+#### Factors - 02W1
 
 + Factors are integer vectors with **labels**, called ```levels```
 + ```attr (myFactor, "levels")``` returns a vector with all the unique levels
@@ -38,27 +38,27 @@ _Note: matrices are vectors, so are also subject to coercion_
 _Note: levels can be ordered by using ```table (myFactor, levels = c(level1, level2, ...))```_
 
 
-#### Lists
+#### Lists - 02W1
 
 + Lists are vectors that can contain elements of **different classes**
 + ```unlist (myList)``` coerces a list back to a vector
 
 
-#### Data Frames
+#### Data Frames - 02W1
 
 + Data frames are used to store tubular data
 + They are lists where every element (column) has the same length (number of rows)
 + They can be converted to matrices with ```data.matrix (myDataFrame)```
 
 
-#### Names
+#### Names - 02W1
 
 + ```names (myVector / myList) <- myNamesVector```
 + ```dimnames (myMatrix) <- list (rowNamesVector, colNamesVector)```
 + ```colnames (myDataFrame) <- myNamesVector```
 + ```row.names (myDataFrame) <- myNamesVector``` _values must be unique; using NULL resets the values_
 
-#### Dates & Times
+#### Dates & Times - 02W1
 
 + Dates, represented by the `Date` class, measure the number of days since 1970-01-01
 + Times, represented by the `POSIXct` and `POSIXlt` class, measure the number of seconds since 1970-01-01
@@ -68,7 +68,7 @@ _Note: levels can be ordered by using ```table (myFactor, levels = c(level1, lev
 
 + `strptime`, `as.Date`, `as.POSIXlt`, `as.POSIXct` can be used to coerce a string into a Date/Time format.
 
-#### Subsetting
+#### Subsetting - 02W1
 
 + `[`  always returns an object of the same class as the original. Can select multiple elements.
 + `[[` extracts elements from a list or data frame. 

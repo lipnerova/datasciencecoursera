@@ -1,5 +1,5 @@
 
-#### Scoping & Free variables
+#### Scoping & Free variables - 02W2
 
 All variables used in a function but neither passed as arguments nor assigned inside the 
 function body are called **free variables**.
