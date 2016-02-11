@@ -91,7 +91,6 @@ sort(X$var1,decreasing=TRUE)
 sort(X$var2,na.last=TRUE)
 ```
 
-
 ---
 
 ## Ordering
@@ -128,7 +127,7 @@ X$var4 <- rnorm(5)
 X
 ```
 
-
+?order
 ---
 
 ## Adding rows and columns

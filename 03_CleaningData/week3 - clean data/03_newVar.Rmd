@@ -135,7 +135,8 @@ class(restData$zcf)
 
 ```{r}
 yesno <- sample(c("yes","no"),size=10,replace=TRUE)
-yesnofac = factor(yesno,levels=c("yes","no"))
+yesno
+yesnofac = factor(yesno)
 yesnofac
 relevel(yesnofac,ref="no")
 as.numeric(yesnofac)

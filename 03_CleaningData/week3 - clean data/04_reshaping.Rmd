@@ -91,6 +91,7 @@ cylData
 ```{r}
 head(InsectSprays)
 tapply(InsectSprays$count,InsectSprays$spray,sum)
+xtabs (count ~ spray, data=InsectSprays)
 ```
 
 [http://www.r-bloggers.com/a-quick-primer-on-split-apply-combine-problems/](http://www.r-bloggers.com/a-quick-primer-on-split-apply-combine-problems/)

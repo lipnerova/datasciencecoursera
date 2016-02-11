@@ -100,7 +100,13 @@ table(restData$zipCode,useNA="ifany")
 ## Make table
 
 ```{r ,dependson="getData"}
-table(restData$councilDistrict,restData$zipCode)
+restData2 <- restData [restData$zipCode %in% c("21212","21213"), ]
+myTable <- table(restData2$councilDistrict,restData2$zipCode)
+myTable
+margin.table(myTable, 2)
+prop.table(myTable, 1)
+myTable <- ftable(table(restData2$councilDistrict,restData2$zipCode,restData2$policeDistrict))
+myTable
 ```
 
 ---
@@ -164,6 +170,7 @@ str
 ```{r ,dependson="adm"}
 xt <- xtabs(Freq ~ Gender + Admit,data=DF)
 xt
+summary(xtabs(Freq ~ ., DF))
 ```
 
 

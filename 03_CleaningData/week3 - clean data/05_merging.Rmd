@@ -78,6 +78,7 @@ names(solutions)
 ```{r, dependson="reviewDownload"}
 mergedData = merge(reviews,solutions,by.x="solution_id",by.y="id",all=TRUE)
 head(mergedData)
+?merge
 ```
 
 ---
