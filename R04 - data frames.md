@@ -1,5 +1,5 @@
 
-## Data Frames - 02W1
+#### Data Frames - 02W1
 
 + Data frames are used to store tubular data
 + They are lists where every element (column) has the same length (number of rows)
@@ -61,9 +61,9 @@ _Note: all to include x/y values missing in y/x_
 
 #### Frequencies & Crosstabs - 03W3
 
-_More info ([here](http://www.statmethods.net/stats/frequencies.html)_
+_More info ([here](http://www.statmethods.net/stats/frequencies.html )_
 
-Frequency table
+Frequency tables:
 
 ```
 mytable <- table(df$A, df$B, useNA = 'ifany') # A will be rows, B will be columns
@@ -77,7 +77,7 @@ prop.table(mytable, 2) # column percentages
 mytable <- ftable (table(df$A, df$B, df$C) # A & B will be rows, C will be columns
 ``` 
 
-Crosstabulation tables
+Crosstabulation tables:
 
 ```
 mytable <- xtabs(c(A, B)~C+D+E, data=mydata) # frequencies of A & B, summed over C,D,E
@@ -89,8 +89,8 @@ ftable(mytable) # print table
 First step is to **melt** the dataframe. The columns of all measured variables will be 
 converted in two columns:
 
-+ variable, listing the column names
-+ value, listing the value of each variable for each id.vars 
++ `variable` listing the column names
++ `value` listing the value of each variable for each id.vars 
 
 ```
 library (reshape2)
@@ -101,3 +101,46 @@ dcast (meltedDF, pivotVar1 ~ pivotVar2 ~ pivotVar3, aggregate.fun, value = value
 _Note: the **aggregate function** is used when a combination of pivot variables identifies
  more than one row. Its input must be a **numeric** vector and its output must have the
  **same length** regardless of input size._
+
+ 
+ 
+#### dplyr
+
+Subsetting: 
+
+```
+select (df, col1name, col2name, ...)
+select (df, colBeg:colEnd) 
+select (df, starts_with/ends_with/one_of) 
+
+filter (df, condition1 & condition2 | condition3)
+```
+
+Sorting & Renaming:
+
+```
+arrange (df, col1, desc (col2))
+rename (df, newName1 = oldName1, newName2 = oldName2)
+```
+
+Operations on variables:
+
+```
+mutate (df, newCol = oldCol - mean (oldCol, na.rm = TRUE))
+transmute (df, newCol = oldCol - mean (oldCol, na.rm = TRUE)) # same as mutate, but drops all untouced variables
+```
+
+Group by & summarize _(similar as dcast, but the aggregate functions can be different)_:
+
+```
+group_by (df, var1, var2) # creates a grouped df
+summarize (grouped_df, var1 = aggregate.fun(var1), var2 = aggregate.fun(var2))
+```
+
+Pipeline: symbol `%>%`
+
+```
+mutate (df, year = as.POSIXlt(date)[['year']] + 1900) %>%
+	group_by (df, year) %>%
+	summarize (var1 = aggregate.fun(var1), var2 = aggregate.fun(var2))
+```

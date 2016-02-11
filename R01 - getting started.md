@@ -68,6 +68,7 @@ _Note: levels can be ordered by using ```table (myFactor, levels = c(level1, lev
   + ```POSIXlt``` is a list that includes day of the week, day of the year, etc.
 
 + `strptime`, `as.Date`, `as.POSIXlt`, `as.POSIXct` can be used to coerce a string into a Date/Time format.
++ ```as.POSIXlt(date)[['year']] + 1900``` returns the year of a date
 
 #### Subsetting - 02W1 & 03W3
 
