@@ -6,7 +6,7 @@ This repository includes all files created while following the The Johns Hopkins
 
 Probability is used to estimate properties of a population based on sample data.
 
-![pAuB](https://github.com/paulwasit/datasciencecoursera/tree/master/06_StatisticalInference/equations)
+![pAuB](https://github.com/paulwasit/datasciencecoursera/tree/master/06_StatisticalInference/equations/pAuB.png)
 $ 
 \begin{eqnarray*}
     A_1 & = & \{\mbox{Person has sleep apnea}\} \\
