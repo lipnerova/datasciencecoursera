@@ -65,7 +65,7 @@ str (chic.f)
 summary (chic.f$pm25tmean2)
 
 # filtering on multiple criteria then selecting a few columns
-chic.f <- v
+chic.f <- filter (chicago, pm25tmean2 > 30)
 select(chic.f, date, tmpd, pm25tmean2) 
 
 
