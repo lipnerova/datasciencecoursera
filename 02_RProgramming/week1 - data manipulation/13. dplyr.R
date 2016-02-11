@@ -11,7 +11,7 @@
 # ---------- SETUP THE WORKING DIRECTORY ---------------------------------------------- #
 
 # setup the working directory
-setwd('.\\02_RProgramming')
+setwd('d:\\datascience\\02_RProgramming')
 
 # install dplyr
 myPackage <- 'dplyr'
@@ -80,12 +80,13 @@ head (select (chicago, date, pm25tmean2), 3)
 tail (select (chicago, date, pm25tmean2), 3) 
 
 # sort by descending order - date
-chicago <- arrange (chicago, desc (date))
+chicago$new <- rep (1:2)
+head(arrange (chicago, new, desc (date)))
 
 head (select (chicago, date, pm25tmean2), 3) 
 tail (select (chicago, date, pm25tmean2), 3) 
 
-
+?rep
 
 # ---------- RENAME ------------------------------------------------------------------- #
 
@@ -118,14 +119,20 @@ chicago <- mutate (chicago, year = as.POSIXlt(date)[['year']] + 1900)
 
 # creating a separate data frame
 years <- group_by (chicago, year)
-head (years)
+
+?summarize
 
 # annual averages of pm25, o3, and no2. 
 summarize (years, 
            pm25 = mean(pm25, na.rm = TRUE),
            o3 = max(o3tmean2, na.rm = TRUE),
-           no2 = median(no2tmean2, na.rm = TRUE)) 
+           no2 = median(no2tmean2, na.rm = TRUE))
 
+# same with reshape2
+require (reshape2)
+chic.melted <- melt (chicago, measure.vars=c('pm25', 'o3tmean2', 'no2tmean2'))
+head (chic.melted)
+dcast (chic.melted, year ~ variable, mean, na.rm=TRUE)
 
 # average levels of ozone (o3) and nitrogen dioxide (no2) within quintiles of pm25
 
