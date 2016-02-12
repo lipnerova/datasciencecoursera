@@ -129,10 +129,19 @@ The standard deviation of a statistics, here of the sample mean, is called a **s
 ![varXsample](equations/varXsample.png?raw=true)
 
 The sample variance is a random variable:
-  + It has an associate population distribution
-  + Its expected value is the population variance
-  + Its distribution gets more concentrated around the population variance with more data
-  + Its square root is the sample standard deviation
++ It has an associate population distribution
++ Its expected value is the population variance
++ Its distribution gets more concentrated around the population variance with more data
++ Its square root is the sample standard deviation
+	
+	
+### Link between sample mean & variance
 
++ The variance of the sample mean is sigma² / n
+  - Its logical estimate is S² / n
+  - The logical estimate of the standard error is S / sqrt(n)
+	
++ S, the sample standard deviation, measures how variable the population is 
++ S / sqrt(n), the standard error, measures how variable the averages of random samples are
 
 
