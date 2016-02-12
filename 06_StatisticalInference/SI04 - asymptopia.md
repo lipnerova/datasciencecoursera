@@ -36,6 +36,12 @@ Properly normalized, the distribution becomes a standard normal:
 
 ### Confidence intervals (CI)
 
+When we estimate something using statistics, usually that estimate comes 
+with uncertainty. Take, for example, election polling. When we get a polled 
+percentage of voters that favor a candidate, we were only able to sample a 
+small subset of voters. Therefore, our estimate has uncertainty associated with it.
+
+Confidence intervals are a convenient way to communicate that uncertainty in estimates.
 
 The 2.5 and 97.5 percentiles are &plusmn;1.96 standard deviations from the mean (approx. &plusmn;2).
 

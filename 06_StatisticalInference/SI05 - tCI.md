@@ -1,87 +1,72 @@
 
 ### Introduction
 
-Asymptotics is the behavior of statistics as the sample size tends to INF.
+For small samples, we can apply Gosset's _t_ distribution and _t_ confidence intervals.
+
+They take the following form, with _TQ_ a _t_ quantile:
+
+![Est \pm TQ \times SE_{Est}](equations/tCI.png?raw=true)
+
+The _t_ distribution has thicker tails than the normal, so the tCI is wider than
+the normal CI. As the sample size increases, the it will become close to the _z_ interval.
+
+It is centered around zero, so it is only indexed by one parameter: 
+the **degrees of freedom**.
 
 
-### Law of large numbers (LLN)
+### Formula
 
-The relative frequency of an event is the number of times an event occurs, divided by the total number of trials:
+Assuming the underlying data are iid Gaussian:
 
-P(A) = ( Frequency of Event A ) / ( Number of Trials )
+![\frac{\bar X - \mu}{S/\sqrt{n}}](equations/tDist.png?raw=true)
 
-**Law of large numbers**, or **LLN**: 
-The relative frequency of an event will converge towards its true probability 
-as the number of trials increases.
+follows a _t_ distribution with _n-1_ degrees of freedom.
 
-An estimator is **consistent** if it converges to what you want to estimate.
+_Note: if we replaces S by &#963; it would be exactly standard normal)_Note
 
-+ the sample mean of iid samples is consistent for the population mean
-+ the sample variance of iid samples is consistent for the population variance
+The tCI interval is:
 
+![\bar X \pm t_{n-1} S/\sqrt{n}](equations/tCIdetail.png?raw=true)
 
 
-### Central Limit Theorem (CLT)
+### Paired _t_ confidence intervals
 
-> The sample mean distribution of iid variables
-> will become normal, or nearly normal, as the sample size increases.
-
-![\bar X \sim N~(\mu, \sigma^2 / n)](equations/normalCLT.png?raw=true)
-
-Properly normalized, the distribution becomes a standard normal:
-
-![\frac{\bar X_n - \mu}{\sigma / \sqrt{n}}~ \sim ~N(0, 1)~~when~n \gg 1](equations/CLT.png?raw=true)
-
-
-
-### Confidence intervals (CI)
-
-
-The 2.5 and 97.5 percentiles are &plusmn;1.96 standard deviations from the mean (approx. &plusmn;2).
-
-It means that:
-
-![P (\bar X \in [\mu \pm 2\sigma / \sqrt{n}]) = 95\%](equations/normalCI.png?raw=true)
-
-We can deduce from it the **95% interval for &#956;:**
-
-![\bar X \pm 2\sigma / \sqrt{n}](equations/normalCI2.png?raw=true)
-
-It means that for each value of the sample mean, the interval above has 95% chances to contain &#956;.
-
-More generally, the &#945;th percentile Confidence Interval of an Estimate is:
-
-![Est \pm ZQ \times SE_{Est}~~where~ZQ=Z_{ (1+\alpha)/2}](equations/CI.png?raw=true)
-
-
-+ CI get narrower with less variability of the pop, and as the sample size increases
-+ CI get wider as the confidence percentage decreases 
-
-### Sample proportions
-
-In a Bernoulli distribution with success probability p, the CI is:
-
-![\hat p \pm z_{1 - \alpha/2}  \sqrt{\frac{p(1 - p)}{n}}](equations/bernoulliCI.png?raw=true)
-
-Which can be approximated, for the 95% interval of p, by:
-
-![\hat p \pm \frac{1}{\sqrt{n}}](equations/bernoulliCI2.png?raw=true)
+If we want to evaluate the before/after difference in a test population, we can apply the tCI 
+to the difference vector:
 
 ```r
-binom.test(sampleSuccessRate, sampleSize)$conf.int # returns the 95% CI for the binomial test
+difference <- g2 - g1 
+mn <- mean(difference); s <- sd(difference); n <- length(difference)
+mn + c(-1, 1) * qt(.975, n-1) * s / sqrt(n) 
+t.test(difference)
+t.test(g2, g1, paired = TRUE)
 ```
 
-_Note: adding 2 success and 2 failures, the Agresti/Coull interval, can give better results when nn is too small._
+### Independent group _t_ confidence intervals
 
+#### Constant variance
 
-###Poisson interval
+A $(1 - &#945;) * 100\%$ confidence interval for 	&#956;_y - 	&#956;_x is:
 
-![poissonCI](equations/poissonCI.png?raw=true)
+![\bar Y - \bar X \pm t_{n_x + n_y - 2, 1 - \alpha/2}S_p\left(\frac{1}{n_x} + \frac{1}{n_y}\right)^{1/2}](equations/tCIindep.png?raw=true)
 
-For a 95% CI, with x the number of events during a period t:
+Where the pooled variance estimator is:
+
+![S_p^2 = \{(n_x - 1) S_x^2 + (n_y - 1) S_y^2\}/(n_x + n_y - 2)](equations/tCIindep2.png?raw=true)
 
 ```r
-lambda <- x/t 
-round(lambda + c(-1, 1) * qnorm(0.975) * sqrt(lambda/t), 3)
+t.test(..., paired = FALSE)
 ```
 
+
+#### Unequal variance
+
+![\bar Y - \bar X \pm t_{df} \times \left(\frac{s_x^2}{n_x} + \frac{s_y^2}{n_y}\right)^{1/2}](equations/tCIunequal.png?raw=true)
+
+Where the following degrees of freedom will give a 95% CI:
+
+![df=\frac{\left(S_x^2 / n_x + S_y^2/n_y\right)^2}{\left(\frac{S_x^2}{n_x}\right)^2 / (n_x - 1) +\left(\frac{S_y^2}{n_y}\right)^2 / (n_y - 1)}](equations/tCIunequal2.png?raw=true)
+
+```r
+t.test(..., var.equal = FALSE)
+```
