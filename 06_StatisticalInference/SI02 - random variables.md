@@ -80,14 +80,14 @@ It represents the center of mass of its population.
 
 ##### Sample mean
 
-The sample mean represents the center of the observed data. For a sample of size n:
+The sample mean represents the center of mass of the observed data. For a sample of size n:
 
 ![expValueDiscreteSample](equations/expValueDiscreteSample.png?raw=true)
 
 The sample mean distribution (ie. the mean values of a certain number of samples) gets more 
 concentrated around the population mean as the sample size increases.
 
-Example with 10.000 die roll samples, where the sample size varies from 1 to 30 rolls.
+Example with 10.000 coin flip samples, where the sample size varies from 1 to 30 flips.
 
 ![dieSamples](equations/dieSamples.png?raw=true)
 
