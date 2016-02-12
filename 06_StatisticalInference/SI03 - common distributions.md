@@ -70,15 +70,21 @@ qnorm (0.9, mean = 0, sd = 1) # returns 1.28
 > The Poisson distribution can also be used for the number of events in other
 > specified intervals such as distance, area or volume.
 
-_source: [wikipedia](https://en.wikipedia.org/wiki/Poisson_distribution)_Note
+_source: [wikipedia](https://en.wikipedia.org/wiki/Poisson_distribution)_
 
-The Poisson mass function is:
+#### Poisson mass function
 
 ![poissonDist](equations/poissonDist.png?raw=true)
 
 * The mean is &#955;
 * The variance is &#955;
 * The function is defined only at integer values, from 0 to INF
+
+![Poisson_pmf](equations/Poisson_pmf.png?raw=true)
+
+#### Poisson Cumulative distribution function
+
+![Poisson_cdf](equations/Poisson_cdf.png?raw=true)
 
 #### Use case
 
@@ -87,6 +93,6 @@ The Poisson Distribution can be used to model rates.
 ![poissonUse](equations/poissonUse.png?raw=true)
 
 ```r
-ppois (x, &#955; * t) # proba to have x events or less during t
+ppois (x, lambda * t) # proba to have x events or less during t
 ```
 
