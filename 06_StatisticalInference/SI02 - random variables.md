@@ -69,6 +69,11 @@ Expected values are useful for characterizing a probability distribution:
 
 Our sample expected values (the sample mean and variance) will estimate the population versions.
 
+- the average of random variables is itself a random variable and its associated distribution has an expected value
+- The center of this distribution is the same as the original distribution
+- Therefore, the expected value of the **sample mean** is the population mean that it's trying to estimate
+- When the expected value of an estimator is what its trying to estimate, we say that the estimator is **unbiased**
+
 
 ##### Population mean
 
