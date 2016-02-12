@@ -24,11 +24,11 @@ The Type I error rate increases as the Type II rate error decreases.
 
 ### General rules
 
-The _Z_ test for H_0: &#956 = &#956_0 versus 
+The _Z_ test for H_0: &#956; = &#956;_0 versus 
 
 ![zHyp](equations/zHyp.png?raw=true)
 	
-* Test statistic (returned value t from t.test):
+Test statistic (returned value t from t.test):
 
 ![TS = \frac{\bar{X} - \mu_0}{S / \sqrt{n}}](equations/zTest.png?raw=true)
 
@@ -41,7 +41,7 @@ We reject the null hypothesis when
 
 * We have fixed &#945; to be low, so if we reject H_0: 
   * either our model is wrong
-	* or there is a low probability that we have made an error
+  * or there is a low probability that we have made an error
 * We have not fixed the probability of a type II error,so we say 'Fail to reject H_0' rather than accepting H_0
 * Statistical significance is no the same as scientific significance
 * The region of TS values for which you reject H_0 is called the rejection region
