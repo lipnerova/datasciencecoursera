@@ -81,6 +81,7 @@ It represents the center of mass of its population.
 The **variance** is a measure of **spread**: it is the expected (squared) distance from the mean.
 
 ![varX](equations/varX.png?raw=true)
+
 ![varX2](equations/varX2.png?raw=true)
 
 - High variance = high spread
@@ -106,7 +107,7 @@ The sample mean represents the center of mass of the observed data. For a sample
 
 ![expValueDiscreteSample](equations/expValueDiscreteSample.png?raw=true)
 
-![expValueDiscreteSample2](equations/expValueDiscreteSample.png?raw=true2)
+![expValueDiscreteSample2](equations/expValueDiscreteSample2.png?raw=true)
 
 The sample mean distribution (ie. the mean values of a certain number of samples) gets more 
 concentrated around the population mean as the sample size increases.
@@ -122,7 +123,7 @@ concentrated around the population mean as the sample size increases.
 ![dieSamples](equations/dieSamples.png?raw=true)
 
 
-##### Sample variance
+#### Sample variance
 
 ![varXsample](equations/varXsample.png?raw=true)
 
