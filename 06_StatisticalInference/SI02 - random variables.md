@@ -67,32 +67,51 @@ Expected values are useful for characterizing a probability distribution:
 - The mean is a characterization of its central tendency
 - The variance and standard deviation are characterizations of its variability (how spread out it is)
 
+
+##### Mean
+
+The **mean** of a discrete random variable X is also called the **expected value E (X)**. 
+It represents the center of mass of its population.
+
+![expValueDiscretePop](equations/expValueDiscretePop.png?raw=true)
+
+
+##### Variance
+
+The **variance** is a measure of **spread**: it is the expected (squared) distance from the mean.
+
+![varX](equations/varX.png?raw=true)
+![varX2](equations/varX2.png?raw=true)
+
+- High variance = high spread
+- The square root of the variance is called the **standard deviation**
+- The standard deviation has the same units as X
+
+
+
+#### Sample Expectations
+
 Our sample expected values (the sample mean and variance) will estimate the population versions.
+
+
+
+##### Mean
 
 - the average of random variables is itself a random variable and its associated distribution has an expected value
 - The center of this distribution is the same as the original distribution
 - Therefore, the expected value of the **sample mean** is the population mean that it's trying to estimate
 - When the expected value of an estimator is what its trying to estimate, we say that the estimator is **unbiased**
 
-
-##### Population mean
-
-The **mean** of a discrete random variable X is also called the **expected value** of X: **E (X)**. 
-It represents the center of mass of its population.
-
-![expValueDiscretePop](equations/expValueDiscretePop.png?raw=true)
-
-
-##### Sample mean
-
 The sample mean represents the center of mass of the observed data. For a sample of size n:
 
 ![expValueDiscreteSample](equations/expValueDiscreteSample.png?raw=true)
 
+![expValueDiscreteSample2](equations/expValueDiscreteSample.png?raw=true2)
+
 The sample mean distribution (ie. the mean values of a certain number of samples) gets more 
 concentrated around the population mean as the sample size increases.
 
-##### Examples
+##### Mean Examples
  
 10.000 coin flip samples, where the sample size varies from 1 to 30 flips.
 
@@ -101,5 +120,17 @@ concentrated around the population mean as the sample size increases.
 10.000 die roll samples, where the sample size varies from 1 to 4 rolls.
 
 ![dieSamples](equations/dieSamples.png?raw=true)
+
+
+##### Sample variance
+
+![varXsample](equations/varXsample.png?raw=true)
+
+The sample variance is a random variable:
+  + It has an associate population distribution
+  + Its expected value is the population variance
+  + Its distribution gets more concentrated around the population variance with more data
+  + Its square root is the sample standard deviation
+
 
 
