@@ -90,13 +90,7 @@ The **variance** is a measure of **spread**: it is the expected (squared) distan
 
 
 
-### Sample Expectations
-
-Our sample expected values (the sample mean and variance) will estimate the population versions.
-
-
-
-#### Mean
+### Sample Mean Distribution
 
 - the average of random variables is itself a random variable and its associated distribution has an expected value
 - The center of this distribution is the same as the original distribution
@@ -110,9 +104,16 @@ The sample mean represents the center of mass of the observed data. For a sample
 ![expValueDiscreteSample2](equations/expValueDiscreteSample2.png?raw=true)
 
 The sample mean distribution (ie. the mean values of a certain number of samples) gets more 
-concentrated around the population mean as the sample size increases.
+concentrated around the population mean as the sample size n increases. Its variance is:
 
-#### Mean Examples
+![sampleMeanVariance](equations/sampleMeanVariance.png?raw=true)
+
+_Note: the actual formula is more complex but can be approximated when n << pop, ie. n < 0.05 pop._
+
+The standard deviation of a statistics, here of the sample mean, is called a **standard error**.
+
+
+#### Examples
  
 10.000 coin flip samples, where the sample size varies from 1 to 30 flips.
 
@@ -123,7 +124,7 @@ concentrated around the population mean as the sample size increases.
 ![dieSamples](equations/dieSamples.png?raw=true)
 
 
-#### Sample variance
+### Sample Variance Distribution
 
 ![varXsample](equations/varXsample.png?raw=true)
 
