@@ -7,18 +7,6 @@ The probability that an experiment results in a successful outcome (S) is:
 P(S) = ( Number of successful outcomes ) / ( Total number of equally likely outcomes )
 
 
-
-#### Law of large numbers
-
-The relative frequency of an event is the number of times an event occurs, divided by the total number of trials:
-
-P(A) = ( Frequency of Event A ) / ( Number of Trials )
-
-The idea that the relative frequency of an event will converge on the probability of the event, 
-as the number of trials increases, is called the **law of large numbers**.
-
-
-
 #### Rules of probability
 
 + The probability of an event ranges from 0 to 1.
