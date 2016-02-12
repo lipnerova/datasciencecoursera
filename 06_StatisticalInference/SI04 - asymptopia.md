@@ -70,5 +70,14 @@ binom.test(sampleSuccessRate, sampleSize)$conf.int # returns the 95% CI for the 
 _Note: adding 2 success and 2 failures, the Agresti/Coull interval, can give better results when nn is too small._
 
 
+###Poisson interval
 
+![poissonCI](equations/poissonCI.png?raw=true)
+
+For a 95% CI, with x the number of events during a period t:
+
+```r
+lambda <- x/t 
+round(lambda + c(-1, 1) * qnorm(0.975) * sqrt(lambda/t), 3)
+```
 

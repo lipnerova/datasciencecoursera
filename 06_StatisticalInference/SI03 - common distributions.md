@@ -76,6 +76,7 @@ _source: [wikipedia](https://en.wikipedia.org/wiki/Poisson_distribution)_
 
 ![poissonDist](equations/poissonDist.png?raw=true)
 
+* &#955; is the average number of events in an interval
 * The mean is &#955;
 * The variance is &#955;
 * The function is defined only at integer values, from 0 to INF
