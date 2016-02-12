@@ -46,11 +46,11 @@ t.test(g2, g1, paired = TRUE)
 
 #### Constant variance
 
-A $(1 - &#945;) * 100\%$ confidence interval for 	&#956;_y - 	&#956;_x is:
+A (1 - &#945;) * 100\% confidence interval for 	&#956;_y - 	&#956;_x is:
 
 ![\bar Y - \bar X \pm t_{n_x + n_y - 2, 1 - \alpha/2}S_p\left(\frac{1}{n_x} + \frac{1}{n_y}\right)^{1/2}](equations/tCIindep.png?raw=true)
 
-Where the pooled variance estimator is:
+Where the pooled variance estimator is the weighted average of S_x & S_y (weight by sample size):
 
 ![S_p^2 = \{(n_x - 1) S_x^2 + (n_y - 1) S_y^2\}/(n_x + n_y - 2)](equations/tCIindep2.png?raw=true)
 
