@@ -30,4 +30,27 @@ A common notation for a random variable RV that follows a **normal** or **Gaussi
 
 ![normalDist](equations/normalDist.png?raw=true)
 
-When ![stdMu](equations/stdMu.png?raw=true) and ![stdSigma](equations/stdSigma.png?raw=true) the resulting distribution is called **the standard normal distribution**, often labeled _Z_.
+When ![stdMu](equations/stdMu.png?raw=true) and ![stdSigma](equations/stdSigma.png?raw=true) the resulting distribution is 
+called **the standard normal distribution**, often labeled _Z_.
+
+We can easily transform any normal distribution to a standard one:
+
+![normalToStd](equations/normalToStd.png?raw=true)
+
+
+#### Quantiles
+
+Percentile | Std deviation from the mean
+----------:|:----------------------------
+    1 | -2.33
+  2.5 | -1.96
+    5 | -1.645
+   10 | -1.28
+	 50 | 0
+	 90 | 1.28
+	 95 | 1.645
+ 97.5 | 1.96
+   99 | 2.33
+
+
+
