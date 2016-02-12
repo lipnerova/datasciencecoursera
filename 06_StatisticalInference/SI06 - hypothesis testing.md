@@ -18,7 +18,7 @@ H_a | H_0 | Type II error |
 
 The Type I error rate increases as the Type II rate error decreases.
 
-* We cab reject the null hypothesis if the sample mean was <, > or <> than some constant, say _C_
+* We can reject the null hypothesis if the sample mean was <, > or <> than some constant, say _C_
 * Typically, _C_ is chosen so that the probability of a Type I error, &#945;, is 0.05 (or some other relevant constant)
 * &#945; = Type I error rate = Probability of rejecting the null hypothesis when, in fact, the null hypothesis is correct
 
