@@ -22,7 +22,7 @@ Assuming the underlying data are iid Gaussian:
 
 follows a _t_ distribution with _n-1_ degrees of freedom.
 
-_Note: if we replaces S by &#963; it would be exactly standard normal)_Note
+_Note: if we replaces S by &#963; it would be exactly standard normal)_
 
 The tCI interval is:
 
