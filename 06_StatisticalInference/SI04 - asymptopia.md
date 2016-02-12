@@ -10,7 +10,7 @@ The relative frequency of an event is the number of times an event occurs, divid
 
 P(A) = ( Frequency of Event A ) / ( Number of Trials )
 
-**law of large numbers**, or **LLN**: 
+**Law of large numbers**, or **LLN**: 
 The relative frequency of an event will converge towards its true probability 
 as the number of trials increases.
 
@@ -25,7 +25,7 @@ An estimator is **consistent** if it converges to what you want to estimate.
 > The sample mean distribution of iid variables
 > will become normal, or nearly normal, as the sample size increases.
 
-![N~(\mu, \sigma^2 / n)](equations/CLT.png?raw=true)
+![\bar X \sim N~(\mu, \sigma^2 / n)](equations/normalCLT.png?raw=true)
 
 Properly normalized, the distribution becomes a standard normal:
 
@@ -34,7 +34,7 @@ Properly normalized, the distribution becomes a standard normal:
 
 ### Convidence intervals
 
-The 2.5 and 97.5 percentiles are &plusmn;1.96 ~ 2 standard deviations from the mean.
+The 2.5 and 97.5 percentiles are &plusmn;1.96 standard deviations from the mean (approx. &plusmn;2).
 
 It means that:
 
