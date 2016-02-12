@@ -30,7 +30,7 @@ A common notation for a random variable RV that follows a **normal** or **Gaussi
 
 ![normalDist](equations/normalDist.png?raw=true)
 
-When ![stdMu](equations/stdMu.png?raw=true) and ![stdSigma](equations/stdSigma.png?raw=true) the resulting distribution is 
+When &#956; = 0 and &#963; = 1 the resulting distribution is 
 called **the standard normal distribution**, often labeled _Z_.
 
 We can easily transform any normal distribution to a standard one:
@@ -46,11 +46,47 @@ Percentile | Std deviation from the mean
   2.5 | -1.96
     5 | -1.645
    10 | -1.28
+	 16 | -1
 	 50 | 0
+	 84 | 1
 	 90 | 1.28
 	 95 | 1.645
  97.5 | 1.96
    99 | 2.33
 
+	 
+```r
+pnorm (1, mean = 0, sd = 1) # returns 0.84
+qnorm (0.9, mean = 0, sd = 1) # returns 1.28
+```
 
+
+### Poisson distribution
+
+> The Poisson Distribution expresses the probability of a given number of events
+> occurring in a fixed interval of time and/or space, if these events occur
+> with a known average rate and independently of the time since the last event.
+
+> The Poisson distribution can also be used for the number of events in other
+> specified intervals such as distance, area or volume.
+
+_source: [wikipedia](https://en.wikipedia.org/wiki/Poisson_distribution)_Note
+
+The Poisson mass function is:
+
+![poissonDist](equations/poissonDist.png?raw=true)
+
+* The mean is &#955;
+* The variance is &#955;
+* The function is defined only at integer values, from 0 to INF
+
+#### Use case
+
+The Poisson Distribution can be used to model rates. 
+
+![poissonUse](equations/poissonUse.png?raw=true)
+
+```r
+ppois (x, &#955; * t) # proba to have x events or less during t
+```
 
