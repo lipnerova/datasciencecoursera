@@ -49,7 +49,7 @@ We can deduce from it the **95% interval for &#956;:**
 
 It means that for each value of the sample mean, the interval above has 95% chances to contain &#956;.
 
-More generally, the &#913;th percentile Confidence Interval of an Estimate is:
+More generally, the &#945;th percentile Confidence Interval of an Estimate is:
 
 ![Est \pm ZQ \times SE_{Est}~~where~ZQ=Z_{ (1+\alpha)/2}](equations/CI.png?raw=true)
 
