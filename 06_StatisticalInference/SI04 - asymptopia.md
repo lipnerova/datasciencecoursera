@@ -20,6 +20,7 @@ An estimator is **consistent** if it converges to what you want to estimate.
 + the sample variance of iid samples is consistent for the population variance
 
 
+
 ### Central Limit Theorem (CLT)
 
 > The sample mean distribution of iid variables
@@ -32,7 +33,8 @@ Properly normalized, the distribution becomes a standard normal:
 ![\frac{\bar X_n - \mu}{\sigma / \sqrt{n}}~ \sim ~N(0, 1)~~when~n \gg 1](equations/CLT.png?raw=true)
 
 
-### Convidence intervals
+
+### Confidence intervals (CI)
 
 The 2.5 and 97.5 percentiles are &plusmn;1.96 standard deviations from the mean (approx. &plusmn;2).
 
@@ -47,4 +49,26 @@ We can deduce from it the **95% interval for &#956;:**
 It means that for each value of the sample mean, the interval above has 95% chances to contain &#956;.
 
 _Note: for the 90% interval, you want 5% in each tail so you would use the 95th percentile = 1.645._
+
++ CI get narrower with less variability of the pop, and as the sample size increases
++ CI get wider as the confidence percentage decreases 
+
+### Sample proportions
+
+In a Bernoulli distribution with success probability p, the CI is:
+
+![\hat p \pm z_{1 - \alpha/2}  \sqrt{\frac{p(1 - p)}{n}}](equations/bernoulliCI.png?raw=true)
+
+Which can be approximated, for the 95% interval of p, by:
+
+![\hat p \pm \frac{1}{\sqrt{n}}](equations/bernoulliCI2.png?raw=true)
+
+```r
+binom.test(sampleSuccessRate, sampleSize)$conf.int # returns the 95% CI for the binomial test
+```
+
+_Note: adding 2 success and 2 failures, the Agresti/Coull interval, can give better results when nn is too small._
+
+
+
 
