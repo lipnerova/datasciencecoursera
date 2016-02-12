@@ -87,7 +87,14 @@ The sample mean represents the center of mass of the observed data. For a sample
 The sample mean distribution (ie. the mean values of a certain number of samples) gets more 
 concentrated around the population mean as the sample size increases.
 
-Example with 10.000 coin flip samples, where the sample size varies from 1 to 30 flips.
+##### Examples
+ 
+10.000 coin flip samples, where the sample size varies from 1 to 30 flips.
+
+![coinSamples](equations/coinSamples.png?raw=true)
+
+10.000 die roll samples, where the sample size varies from 1 to 4 rolls.
 
 ![dieSamples](equations/dieSamples.png?raw=true)
+
 
