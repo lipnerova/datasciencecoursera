@@ -1,5 +1,5 @@
 
-#### Introduction
+### Introduction
 
 A **random variable** is a numerical outcome of an experiment. It can either be **discrete** or **continuous**.
 
@@ -12,7 +12,7 @@ Random variables are said to be iid if they are **independent and identically di
 iid random variables are the default model for random samples
 
 
-#### Probability Mass Functions
+### Probability Mass Functions
 
 A PMF is associated with **discrete random variables**.
 
@@ -26,7 +26,7 @@ To be a valid PMF, a function must satisfy:
 
 	
 	
-#### Probability Density Functions
+### Probability Density Functions
 
 A PDF is associated with **continuous random variables** .
 
@@ -42,7 +42,7 @@ As a result, the probability that a continuous random variable will assume a par
 
 
 
-#### Cumulative Distribution Functions
+### Cumulative Distribution Functions
 
 + The CDF of a random variable X returns the probability that X is less than or equal to the value $x$
 + The Survival function of a random variable X returns the probability that X is greater than the value $x$
@@ -50,7 +50,7 @@ As a result, the probability that a continuous random variable will assume a par
 
 
 
-#### Quantiles
+### Quantiles
 
 The  _&#945;<sup>th</sup>_ **quantile** of a distribution with distribution function _F_ is the point x<sub>&#945;</sub> where:
 
@@ -60,7 +60,7 @@ The **median** is the _50<sup>th</sup>_ percentile.
 
 
 
-#### Expectations
+### Expectations
 
 Expected values are useful for characterizing a probability distribution:
 
@@ -68,7 +68,7 @@ Expected values are useful for characterizing a probability distribution:
 - The variance and standard deviation are characterizations of its variability (how spread out it is)
 
 
-##### Mean
+#### Mean
 
 The **mean** of a discrete random variable X is also called the **expected value E (X)**. 
 It represents the center of mass of its population.
@@ -76,7 +76,7 @@ It represents the center of mass of its population.
 ![expValueDiscretePop](equations/expValueDiscretePop.png?raw=true)
 
 
-##### Variance
+#### Variance
 
 The **variance** is a measure of **spread**: it is the expected (squared) distance from the mean.
 
@@ -89,13 +89,13 @@ The **variance** is a measure of **spread**: it is the expected (squared) distan
 
 
 
-#### Sample Expectations
+### Sample Expectations
 
 Our sample expected values (the sample mean and variance) will estimate the population versions.
 
 
 
-##### Mean
+#### Mean
 
 - the average of random variables is itself a random variable and its associated distribution has an expected value
 - The center of this distribution is the same as the original distribution
@@ -111,7 +111,7 @@ The sample mean represents the center of mass of the observed data. For a sample
 The sample mean distribution (ie. the mean values of a certain number of samples) gets more 
 concentrated around the population mean as the sample size increases.
 
-##### Mean Examples
+#### Mean Examples
  
 10.000 coin flip samples, where the sample size varies from 1 to 30 flips.
 
