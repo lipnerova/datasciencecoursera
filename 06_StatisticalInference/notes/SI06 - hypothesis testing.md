@@ -56,3 +56,5 @@ We reject the null hypothesis when
   with the normal quantiles replaced by the appropriate Student's T quantiles and
   n-1 df
 
+### P-values
+

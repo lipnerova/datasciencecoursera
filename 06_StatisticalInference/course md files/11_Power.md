@@ -25,7 +25,7 @@ mode        : selfcontained # {standalone, draft}
 - Consider our previous example involving RDI
 - $H_0: \mu = 30$ versus $H_a: \mu > 30$
 - Then power is 
-$$P\left(\frac{\bar X - 30}{s /\sqrt{n}} > t_{1-\alpha,n-1} ~;~ \mu = \mu_a \right)$$
+$$P\left(\frac{\bar X - m}{s /\sqrt{n}} > t_{1-\alpha,n-1} ~;~ \mu = \mu_a \right)$$
 - Note that this is a function that depends on the specific value of $\mu_a$!
 - Notice as $\mu_a$ approaches $30$ the power approaches $\alpha$
 
