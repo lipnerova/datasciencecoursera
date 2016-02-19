@@ -1,0 +1,155 @@
+---
+title: "Assignment Week 4"
+output: pdf_document
+---
+
+```{r, echo=FALSE,warning=FALSE,message=FALSE}
+a4width<- 8.3
+a4height<- 11.7
+source("D:\\datascience\\multiplot.R")
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+library(manipulate) 
+lambda <- 0.2
+expected_mean <- 1/lambda     
+```
+
+# Exponential Distribution
+
+## Definition
+
+According to [Wikipedia](https://en.wikipedia.org/wiki/Exponential_distribution):
+
+> The exponential distribution [...] is the probability distribution 
+> that describes the time between events in a Poisson process, i.e. a process 
+> in which events occur continuously and independently at a constant **average rate $\lambda$**.
+
++ Its mean is 1/ $\lambda$
++ Its standard deviation is also 1/	$\lambda$
+
+In our example, we will use **$\lambda$=0.2**. 
+
+## Samples mean & variance
+
+Samples mean & sample variance are **consistent estimators** of the populations mean & variance: 
+they converge to the correct value as the number of samples increases.
+
+Let's study the distribution of 1000 averages of 40 exponentials. Fig.1 and Fig.2 show the distribution of sample mean & sample variance, plus their mean and theoretical values:
+
+```{r, echo=FALSE}
+
+number_of_samples <- 1000
+sample_size <- 40                # 5
+expected_var <- 1 / (lambda^2 * sample_size)  # 0.625
+
+# we build our samples pool from seed 1 (to have reproducible data)
+set.seed(1); mns0 = NULL; mns_var = NULL
+for (i in 1 : number_of_samples) {
+  sample <- rexp(sample_size, lambda)
+  mns0 = c(mns0, mean(sample))
+  mns_var = c(mns_var, var(sample))
+}
+
+rm (i,sample)
+
+```
+
+```{r, warning=FALSE, echo=FALSE,  fig.width = 0.8*a4width, fig.height = 0.3*a4height, fig.align='center'}
+
+# plot the samples mean distribution & its mean
+p1 = qplot(mns0, geom = 'blank') + 
+    geom_histogram(aes(y=..density..), binwidth = 0.1, alpha=0.4) +
+    geom_vline (xintercept=mean(mns0), color='salmon2', lwd=1) +
+    xlab("mean") +
+    ggtitle ("Fig. 1: Sample Mean PDF") +
+    theme(title=element_text(size = 8, colour = 'black'),
+    plot.title=element_text(face='italic', vjust=2)) +
+    annotate("text", x = 8, y = 0.55, hjust = 1, size=2.5,
+             label = paste("mean: ", round(mean(mns0),3),
+                           "\nexpected mean: ", 1/lambda))
+
+# plot the samples variance distribution & its mean
+p2 = qplot(mns_var, geom = 'blank') + 
+    geom_histogram(aes(y=..density..), binwidth = 1, alpha=0.4, lwd=1) +
+    geom_vline (xintercept=mean(mns_var), color='salmon2', lwd=1) +
+    xlab("variance") + xlim(0,100) +
+    ggtitle ("Fig. 2: Sample Variance PDF") +
+    theme(title=element_text(size = 8, colour = 'black'),
+    plot.title=element_text(face='italic', vjust=2)) +
+    annotate("text", x = 100, y = 0.05, hjust = 1, size=2.5,
+             label = paste("variance mean: ", round(mean(mns_var),3),"\n", "expected variance mean: ", 1/lambda^2))
+
+multiplot(p1, p2, cols=2)
+rm (p1,p2,mns_var)
+
+```
+
+We clearly see that **their mean is close to the value they estimate**. 
+
+\pagebreak
+
+# Central Limit Theorem
+
+## Definition
+
+The **Central Limit Theorem** states that, according to the Law of Large Numbers:
+
+> The **sample mean distribution** of iid variables (mean = $\mu$, sd = $\sigma$) will become **normal**, 
+> or nearly normal, as the sample size n increases. It will be approximated by:
+
+> **$\bar X \sim N~(\mu, \sigma^2 / n)$**
+
+An important point is that the CLT works **even if the original distribution is not normal**.
+
+## Example
+
+Fig. 3 shows the PDF for our distribution ($\lambda$=0.2) vs a Normal with the same mean and standard deviation.
+
+Fig.4 shows the empirical distribution of samples mean _(cf. Fig.1)_ VS the CLT predicted one:
+
++ $Est=1/\lambda = 5$ 
++ $SE_{Est}=1/(\lambda \times \sqrt{n}) = 0.625$
+
+
+```{r, echo=FALSE, fig.width = 0.8*a4width, fig.height = 0.3*a4height, fig.align='center', warning=FALSE}
+
+# CLT normal
+dnorm_CLT <- function (x) {
+  y <- dnorm(x, mean = expected_mean, sd = sqrt(expected_var))
+  return (y)
+}
+
+p1 = qplot(x=c(0,30), geom = 'blank') + 
+  stat_function(fun = dexp, arg = list(rate=lambda), aes(colour = 'Exponential'), lwd=1) +
+  stat_function(fun = dnorm, arg = list(mean = 1/lambda, sd = 1/lambda), aes(colour = 'Normal'), lwd=1) +
+  scale_x_continuous(breaks = seq(0,30,5)) + 
+  xlab("X") + ylab("P(X)") + scale_color_discrete(name =element_blank()) +
+  ggtitle ("Fig. 3: PDF - Exponential vs Normal") +
+  theme(title=element_text(size = 8, colour = 'black'),
+        plot.title=element_text(face='italic', vjust=2),
+        legend.position='bottom')
+
+# plot the samples distribution & theoretical mean distribution
+p2 = qplot(mns0, geom = 'blank') + xlim(2.5,7.5) + ylim(0,0.7) +
+  geom_line(aes(y = ..density.., colour = 'Empirical'), stat = 'density', lwd=1) +  
+  geom_histogram(aes(y=..density..), binwidth = 0.1, alpha=0.4) +
+  stat_function(fun = dnorm_CLT, aes(colour = 'Theoretical'), lwd=1) +
+  xlab("mean") +
+  scale_colour_discrete(name=element_blank()) +
+  ggtitle ("Fig. 4: PDF - Samples Mean vs Normal") +
+  theme(title=element_text(size = 8, colour = 'black'),
+        plot.title=element_text(face='italic', vjust=2),
+        legend.position='bottom')
+        
+multiplot(p1, p2, cols=2)
+rm (p1,p2)
+
+```
+
+We clearly see that:
+
++ our exponential distribution is **not even close to being normal**
++ **the empirical distribution is very close to being normal**, as predicted by the CLT
+
+
