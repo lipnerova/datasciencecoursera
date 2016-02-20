@@ -1,0 +1,54 @@
+
+## lapply: Loop over a list and evaluate a function on each element 
+
+`lapply` takes three arguments: 
+(1) a list `X`; 
+(2) a function (or the name of a function) `FUN`; 
+(3) other arguments via its ... argument. If `X` is not a list, it will be coerced to a list using `as.list`.
+
+`lapply` always returns a list, regardless of the class of the input. The actual looping is done internally in C code.
+
+
+```r
+x <- list(a = 1:5, b = rnorm(10))
+lapply(x, mean)
+
+x <- list(a = 1:4, b = rnorm(10), c = rnorm(20, 1), d = rnorm(100, 5))
+lapply(x, mean)$a
+sapply(x, mean)['a']
+
+x <- 1:4
+lapply(x, runif)
+
+# min & max, passed as ... arguments, are applied to the FUN runif
+x <- 1:4
+lapply(x, runif, min = 0, max = 10)  
+
+# anonymous function for extracting the first column of each matrix
+x <- list(a = matrix(1:4, 2, 2), b = matrix(1:6, 3, 2)) 
+lapply(x, function(elt) elt[,1])
+
+# same as
+f <- function(elt) {
+  elt[, 1]
+}
+lapply(x, f) 
+```
+
+
+
+## sapply: Same as `lapply` but try to simplify the result
+
+- If the result is a list where every element is length 1, then a vector is returned
+
+- If the result is a list where every element is a vector of the same length (> 1), a matrix is returned.
+
+- If it can’t figure things out, a list is returned
+
+
+```r
+x <- list(a = 1:4, b = rnorm(10), c = rnorm(20, 1), d = rnorm(100, 5))
+lapply(x, mean)
+sapply(x, mean) 
+mean(x)
+```

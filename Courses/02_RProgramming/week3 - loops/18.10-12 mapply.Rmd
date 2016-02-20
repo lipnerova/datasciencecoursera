@@ -1,0 +1,59 @@
+
+## mapply: multivariate apply of sorts which applies a function in parallel over a set of arguments
+
+```r
+function (FUN, ..., MoreArgs = NULL, SIMPLIFY = TRUE,
+          USE.NAMES = TRUE)
+```
+
+- `FUN` is a function to apply
+- ... contains arguments to apply over
+- `MoreArgs` is a list of other arguments to `FUN`.
+- `SIMPLIFY` indicates whether the result should be simplified
+
+
+```r
+#same
+list (rep(1, 4), rep(2, 3), rep(3, 2), rep(4, 1))
+mapply(rep, 1:4, 4:1) # the longer argument has to be a multiple of length of shorter
+```
+
+
+## Vectorizing a Function
+
+```r
+noise <- function(n, mean, sd) {
+  rnorm(n, mean, sd)
+}
+noise(5, 1, 2)
+noise(1:5, 1:5, 2)
+
+# Instant Vectorization
+mapply(noise, 1:5, 1:5, 2)
+
+# is the same as
+list(noise(1, 1, 2), noise(2, 2, 2),
+     noise(3, 3, 2), noise(4, 4, 2),
+     noise(5, 5, 2))
+```
+
+
+## Vectorizing: useful for plotting
+
+Example: function that computes the sum of squares given some data in a vector `x`, a mean parameter `mu` and a standard deviation `sigma`. 
+
+
+```r
+sumsq <- function(mu, sigma, x) {
+  sum(((x - mu) / sigma)^2)
+}
+
+
+x <- rnorm(100)      # Generate some data
+sumsq(1:10, 1:10, x) # This is not what we want: the call to sumsq() only produced one value instead of 10
+
+mapply(sumsq, 1:10, 1:10, MoreArgs = list(x = x))  # list(x=x) applies x to all 10 examples
+
+vsumsq <- Vectorize(sumsq, c("mu", "sigma"))
+vsumsq(1:10, 1:10, x)
+```

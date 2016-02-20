@@ -1,0 +1,119 @@
+
+This table (46 fields) provides each hospital's risk-adjusted 30-Day Death (mortality) and 30-Day Readmission category and rate. 
+
+
+## Hospital Information
+
+  1. Provider Number: varchar (06) Lists the hospitals by their provider identification number.  
+  2. Hospital Name:   varchar (50) Lists the name of the hospital.  
+  3. Address 1:       varchar (50) Lists the first line of the street address of the hospital.  
+  4. Address 2:       varchar (50) Lists the second line of the street address of the hospital.  
+  5. Address 3:       varchar (50) Lists the third line of the street address of the hospital.  
+  6. City:            varchar (28) Lists the city in which the hospital is located.  
+  7. State:           varchar (02) Lists the 2 letter State code in which the hospital is located.   
+  8. ZIP Code:           char (05) Lists the 5 digit numeric ZIP for the hospital.  
+  9. County Name:        char (15) Lists the county in which the hospital is located.  
+ 10. Phone Number:       char (10) Lists the 10-digit numeric telephone number, including area code, for the Hospital.  
+
+
+## Hospital 30-Day Death (Mortality) Rates from Heart Attack (30DMR-HA)
+
+ 11. *30DMR-HA*: Lists the risk adjusted rate (percentage) for each hospital.  
+
+ 12. *30DMR-HA - Comparison to U.S. Rate*: varchar (50) Lists the mortality and readmission category in which the hospital falls. The values are:  
+    . Better than U.S. National Average  
+    . No Different than U.S. National Average  
+    . Worse than U.S. National Average  
+    . Number of Cases too Small* 
+
+ 13. *30DMR-HA - Lower Mortality Estimate*: Lists the lower bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 14. *30DMR-HA - Upper Mortality Estimate*: Lists the upper bound (Interval Estimate) for each hospital's risk-adjusted rate. 
+ 15. *30DMR-HA - Number of Patients*: varchar (5) Lists the number of Medicare patients treated for Heart Attack by the Hospital. 
+ 16. *30DMR-HA - Footnote*: Lists the footnote value when appropriate, as related to the Heart Attack Outcome of Care at the hospital.  
+
+
+
+## Hospital 30-Day Death (Mortality) Rates from Heart Failure (30DMR-HF)
+
+ 17. *30DMR-HF*: Lists the risk adjusted rate (percentage) for each hospital. 
+ 
+ 18. *30DMR-HF - Comparison to U.S. Rate*: varchar (50) Lists the mortality and readmission category in which the hospital falls. The values are:  
+      a. Better than U.S. National Average 
+      b. No Different than U.S. National Average 
+      c. Worse than U.S. National Average 
+      d. Number of Cases too Small*  
+  
+ 19. *30DMR-HF - Lower Mortality Estimate*: Lists the lower bound (Interval Estimate) for each hospital's risk-adjusted rate. 
+ 20. *30DMR-HF - Upper Mortality Estimate*: Lists the upper bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 21. *30DMR-HF - Number of Patients*: varchar (5) Lists the number of Medicare patients treated for Heart Failure by the Hospital.  
+ 22. *30DMR-HF - Footnote - 30DRHF*: Lists the footnote value when appropriate, as related to the Heart Failure Outcome of Care at the hospital.  
+ 
+
+
+## Hospital 30-Day Death (Mortality) Rates from Pneumonia (30DMR-P)
+ 
+ 23. *30DMR-P*: Lists the risk adjusted rate (percentage) for each hospital. 
+ 
+ 24. *30DMR-P - Comparison to U.S. Rate*: varchar (50) Lists the mortality and readmission category in which the hospital falls. The values are:  
+    . Better than U.S. National Average  
+    . No Different than U.S. National Average  
+    . Worse than U.S. National Average 
+    . Number of Cases too Small*  
+ 
+ 25. *30DMR-P - Lower Mortality Estimate*: Lists the lower bound (Interval Estimate) for each hospital's risk-adjusted rate. 
+ 26. *30DMR-P - Upper Mortality Estimate*: Lists the upper bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 27. *30DMR-P - Number of Patients*: varchar (5) Lists the number of Medicare patients treated for Pneumonia by the Hospital.  
+ 28. *30DMR-P - Footnote*: Lists the footnote value when appropriate, as related to the Pneumonia Outcome of Care at the hospital.  
+ 
+
+
+# Hospital 30-Day Readmission Rates from Heart Attack (30DRR-HA)
+ 
+ 29. *30DRR-HA*: Lists the risk adjusted rate (percentage) for each hospital. 
+ 
+ 30. *30DRR-HA - Comparison to U.S. Rate*: varchar (50) Lists the mortality and readmission category in which the hospital falls. The values are: 
+    . Better than U.S. National Average  
+    . No Different than U.S. National Average  
+    . Worse than U.S. National Average  
+    . Number of Cases too Small*  
+ 
+ 31. *30DRR-HA - Lower Readmission Estimate*: Lists the lower bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 32. *30DRR-HA - Upper Readmission Estimate*: Lists the upper bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 33. *30DRR-HA - Number of Patients*: varchar (5) Lists the number of Medicare patients treated for Heart Attack.  
+ 34. *30DRR-HA - Footnote*: Lists the footnote value when appropriate, as related to the Heart Attack Outcome of Care at the hospital.  
+ 
+ 
+ 
+# Hospital 30-Day Readmission Rates from Heart Failure (30DRR-HF)
+
+ 35. *30DRR-HF*: Lists the risk adjusted rate (percentage) for each hospital.  
+ 
+ 36. *30DRR-HF - Comparison to U.S. Rate*: varchar (50) Lists the mortality and readmission category in which the hospital falls. The values are: 
+    . Better than U.S. National Average 
+    . No Different than U.S. National Average 
+    . Worse than U.S. National Average 
+    . Number of Cases too Small*  
+    
+ 37. *30DRR-HF - Lower Readmission Estimate*: Lists the lower bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 38. *30DRR-HF - Upper Readmission Estimate*: Lists the upper bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 39. *30DRR-HF - Number of Patients*: varchar (5) Lists the number of Medicare patients treated for Heart Failure. 
+ 40. *30DRR-HF - Footnote*: Lists the footnote value when appropriate, as related to the Heart Failure Outcome of Care at the hospital.
+ 
+
+
+# Hospital 30-Day Readmission Rates from Pneumonia (30DRR-P)
+ 
+ 41. *30DRR-P*: Lists the risk adjusted rate (percentage) for each hospital. 
+ 
+ 42. *30DRR - PComparison to U.S. Rate*: varchar (50) Lists the mortality and readmission category in which the hospital falls. The values are:
+    . Better than U.S. National Average  
+    . No Different than U.S. National Average  
+    . Worse than U.S. National Average  
+    . Number of Cases too Small*
+    
+ 43. *30DRR - Lower Readmission Estimate*: Lists the lower bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 44. *30DRR - Upper Readmission Estimate*: Lists the upper bound (Interval Estimate) for each hospital's risk-adjusted rate.  
+ 45. *30DRR - Number of Patients*: varchar (5) Lists the number of Medicare patients treated for Pneumonia.  
+ 46. *30DRR - Footnote*: Lists the footnote value when appropriate, as related to the Pneumonia Outcome of Care at the hospital.  
+ 
+ 
