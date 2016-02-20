@@ -1,5 +1,4 @@
 # OS
-
 # ===========
 
 .DS_Store
@@ -16,24 +15,17 @@ Thumbs.db
 artofdatascience.pdf
 rprogramming.pdf
 exdata.pdf
+reportwriting.pdf
+regmods.pdf
+lm.pdf
 
 
-# Assignments
-# ===========
-*prv*
-courses/
-statisticalCourses/
+# Quizz & Data
+# ============
+data/
+*quizz*
+
+# Temp
+# ====
+raw_courses/
 practice/
-
-
-# Heavy data files
-# ================
-02_RProgramming/assignments/week2/specdata
-02_RProgramming/assignments/week4/*.csv
-
-03_CleaningData/assignments/week3/data
-03_CleaningData/assignments/week4/data
-
-04_ExploratoryAnalysis/assets/pm25_data/*.txt
-04_ExploratoryAnalysis/assignments/week1/household_power_consumption.txt
-04_ExploratoryAnalysis/assignments/week4/data
