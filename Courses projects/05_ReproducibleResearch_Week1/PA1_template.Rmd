@@ -2,7 +2,9 @@
 title: "Untitled"
 author: "Sebastien Plat"
 date: "19 février 2016"
-output: html_document
+output: 
+  html_document:
+    keep_md: true
 ---
 
 ```{r setup, cache=FALSE, include=FALSE}
@@ -47,12 +49,13 @@ library(reshape2)
 
 \  
 
-## 1. Loading & prepping the Dataset
+## 1. Loading and preprocessing the data
 
 ### Loading
 
 ```{r}
 activity <- read.csv("activity.csv")
+activity$intervalFactor <- factor (activity$interval)
 ```
 
 \  
@@ -63,7 +66,7 @@ Before going further, let's have a first look at the data. We have:
  
 + **61** days
 + **288** intervals, from 0 to 2355
-+ Intervals show the time of day with format **HH:mm**: we jump from "55" to "100", from "155" to "200", etc.
++ Intervals show the time of day with format **HHmm**: we jump from "55" to "100", from "155" to "200", etc.
  
 + **All recorded days have 288 unique interval values**
 + **Each day either has 288 NA values or not at all**
@@ -76,7 +79,7 @@ Before going further, let's have a first look at the data. We have:
 str(activity)
 
 # look at interval values more closely
-head (levels(factor(activity$interval)), 25)
+head (activity$intervalFactor, 25)
 
 # check if some days have more or less than 288 intervals
 print.data.frame(group_by(activity, date) %>% filter (n()!=288)) # returns empty df
@@ -96,7 +99,7 @@ rm (naCount)
 
 \  
 
-## 2. Mean and median number of steps taken each day
+## 2. What is mean total number of steps taken per day?
 
 Fig.1 shows the histogram of daily steps, excluding the 8 days without data. 
 Calculations show that **mean = median = 10765 steps/day**.
@@ -144,7 +147,7 @@ rm (dailyActivity, dailyMean, dailyMedian, g)
 
 \  
 
-## 3. Average daily activity pattern
+## 3. What is the average daily activity pattern?
 
 Fig.2 shows the average daily activity pattern. On average, **the most active interval is between 8:35AM and 8:40PM**,
 with **206 steps**.
@@ -185,7 +188,7 @@ rm (mostActiveInterval, mostNumberOfSteps, g)
 
 \  
 
-## 4. Handling missing values
+## 4. Imputing missing values
 
 As shown in 1., there are **8 days absolutely without data**. We will populate them with the **average for each interval**, that we calculated in 3.
 
@@ -256,16 +259,16 @@ rm (intervalActivity, fullActivityMelt, fullDailyActivity, g, mean1, mean2, medi
 
 \  
 
-## 5. Average daily activity pattern - weekdays vs weekends
+## 5. Are there differences in activity patterns between weekdays and weekends?
 
 Fig.4 shows the average daily activity pattern on weekdays vs weekends, compared to the
-global average. We clearly see that the recorded person was much more active on weekends.
+global average. We clearly see that the recorded person was **much more active on weekends**.
 
 + Weekday Daily Average: 10.255 steps
-+ Weekend Daily Average: 12.200 steps, +19% vs weekday
++ Weekend Daily Average: 12.200 steps, **+19% vs weekday**
 
 
-_Note: we will use the complete dataset, where the NA values have been replaced by the interval average._
+_Note: we use the complete dataset, where the NA values have been replaced by the interval average._
 
 ```{r, fig.height=7.5}
 
