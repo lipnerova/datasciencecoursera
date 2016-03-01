@@ -1,6 +1,6 @@
 ## Course Title
 
-Obtaining data
+Prediction and Machine Learning
 
 ---
 
@@ -13,24 +13,23 @@ Obtaining data
 
 ## Course Description
 
-Before you can work with data you have to get some. This course will cover the basic ways that data can be obtained. The course will cover obtaining data from the web, from APIs, and from colleagues in various formats including raw text files, binary files, and databases. It will also cover the basics of data cleaning and how to make data “tidy”. Tidy data dramatically speed downstream data analysis tasks. The course will also cover the components of a complete data set including raw data, processing instructions, codebooks, and processed data. The course will cover the basics needed for collecting, cleaning, and sharing data. 
+One of the most common tasks performed by data scientists and data analysts are prediction and machine learning. This course will cover the basic components of building and applying prediction functions with an emphasis on practical applications. The course will provide basic grounding in concepts such as training and tests sets, overfitting, and error rates. The course will also introduce a range of model based and algorithmic machine learning methods including regression, classification trees, Naive Bayes, and random forests. The course will cover the complete process of building prediction functions including data collection, feature creation, algorithms, and evaluation. 
 
 
 ---
 
 ## Course Content
 
-* Data collection
-  * Raw files (.csv,.xlsx)
-  * Databases (mySQL,MongoDB)
-  * APIs
-* Data formats
-  * Flat files (.csv,.txt)
-  * XML
-  * JSON
-* Making data tidy
-* Distributing data
-* Scripting for data cleaning
+* Prediction study design
+* Types of errors
+* Types of objective functions
+* Cross-validation
+* Fitting models in R (caret package)
+* Predicting with regression
+* Predicting with trees
+* Predicting with boosting and bagging
+* Combining predictors
+* Diagnosing issues
 
 ---
 
@@ -83,7 +82,7 @@ You may attempt each quiz up to 2 times. Only the score from your final attempt 
 
 ## Hard deadlines and soft deadlines
 
-The reported due date is the soft deadline for each quiz. You may turn in quizzes up to two days after the soft deadline. The hard deadline is the Tuesday after the Quiz is due at 23:30 UTC-5:00. Each day late will incur a 10% penalty, but if you use a late day, the penalty will not be applied to that day.
+The reported due date is the soft deadline for each quiz. You may turn in quizzes up to two days after the soft deadline. The hard deadline is the Tuesday after the Quiz is due at 23:30 UTC-5:00\. Each day late will incur a 10% penalty, but if you use a late day, the penalty will not be applied to that day.
 
 ---
 
@@ -119,7 +118,9 @@ the most up-to-date version of the course material.
 
 ## Differences of opinion
 
-Keep in mind that currently data analysis is as much art as it is science - so we may have a difference of opinion - and that is ok! Please refrain from angry, sarcastic, or abusive comments on the message boards. Our goal is to create a supportive community that helps the learning of all students, from the most advanced to those who are just seeing this material for the first time. 
+Keep in mind that currently data analysis is as much art as it is science - so we may have a difference of opinion - and that is ok! Please refrain from angry, sarcastic, or abusive comments on the message boards. Our goal is to create a supportive community
+that helps the learning of all students, from the most advanced
+to those who are just seeing this material for the first time. 
 
 ---
 

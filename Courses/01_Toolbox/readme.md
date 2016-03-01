@@ -1,6 +1,6 @@
 ## Course Title
 
-Obtaining data
+Data Scientist's Toolbox
 
 ---
 
@@ -13,24 +13,24 @@ Obtaining data
 
 ## Course Description
 
-Before you can work with data you have to get some. This course will cover the basic ways that data can be obtained. The course will cover obtaining data from the web, from APIs, and from colleagues in various formats including raw text files, binary files, and databases. It will also cover the basics of data cleaning and how to make data “tidy”. Tidy data dramatically speed downstream data analysis tasks. The course will also cover the components of a complete data set including raw data, processing instructions, codebooks, and processed data. The course will cover the basics needed for collecting, cleaning, and sharing data. 
+In this course you will get an introduction to the main tools and ideas
+in the data scientists toolbox. The course gives an overview of the data, questions, and tools that data analysts and data scientists work with. There are two components to this course. The first is a conceptual introduction to the ideas behind turning data into actionable knowledge. The second is a practical introduction to the tools that will be used in the program like version control, markdown, git, Github, R, and Rstudio. 
 
 
 ---
 
 ## Course Content
 
-* Data collection
-  * Raw files (.csv,.xlsx)
-  * Databases (mySQL,MongoDB)
-  * APIs
-* Data formats
-  * Flat files (.csv,.txt)
-  * XML
-  * JSON
-* Making data tidy
-* Distributing data
-* Scripting for data cleaning
+* Track motivation
+* Getting help
+* Introduction to basic tools
+  * R 
+  * Rstudio
+  * Git
+  * Github
+* Types of data questions
+* Steps in a data analysis
+* Putting the science in data science
 
 ---
 
@@ -64,14 +64,6 @@ Due: 21st of the Month 12:00 AM UTC
 
 Assigned: 22nd of the Month 12:01 AM UTC
 Due: 28th of the Month 12:00 AM UTC
-
-
----
-
-## Background lectures
-
-Background lectures about the content of the course with respect to other quantitative courses, course logistics, and the R programming language are provided as reference material. It is not necessary to watch the videos to complete the course, however they may be useful for explaining background, the grading schemes used, and how to use R. 
-
 
 ---
 
