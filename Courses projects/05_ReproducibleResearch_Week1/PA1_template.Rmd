@@ -213,7 +213,7 @@ the mean.
 # build the df for daily avg
 fullDailyActivity <- group_by(fullActivity, date) %>%
                      summarize(dailySum=sum(steps), fullDailySum=sum(fullSteps))
-
+mean(fullDailyActivity$fullDailySum, na.rm = T)
 # melt the result so we can ggplot both with/without NA with facets 
 fullActivityMelt <- melt (fullDailyActivity, id.vars = "date")
 
@@ -227,7 +227,6 @@ myMeanMedian <- data.frame(variable=levels(fullActivityMelt$variable),
                            myMean=c(mean1,mean2),
                            myMedian=c(median1,median2))
 
-# prepare daily steps counts
 g = ggplot(fullActivityMelt, geom = 'blank') + facet_grid(. ~ variable) +
     geom_histogram(aes(x=value), binwidth = 1000, alpha=0.4)
 

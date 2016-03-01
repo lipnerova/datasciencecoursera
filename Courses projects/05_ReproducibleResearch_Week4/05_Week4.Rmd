@@ -1,0 +1,220 @@
+---
+title: "Impact of severe wheather events on public health and ecomomy in the US"
+author: "Sebastien Plat"
+date: "21 février 2016"
+output: pdf_document
+---
+
+```{r setup, cache=FALSE, include=FALSE, message=FALSE}
+library(knitr)
+output <- opts_knit$get("rmarkdown.pandoc.to")
+if (output=="html") opts_chunk$set(fig.align='center')
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+source("..\\decode.R")
+```
+
+## Synopsis
+
+Storms and other severe weather events can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage, and preventing such outcomes to the extent possible is a key concern.
+
+This document will present the analysis of the U.S. National Oceanic and Atmospheric Administration's (NOAA) Storm Database, and its results regarding the following questions:
+
++ Across the US, which types of events are most harmful with respect to population health?
++ Across the US, which types of events have the greatest economic consequences?
+
+## Data Processing
+
+```{r, cache = TRUE}
+# download archive
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
+if (!file.exists("data\\stormData.bz2")) {
+  download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2",
+                "data\\stormData.bz2")
+}
+
+# read archive (takes a while)
+storm <- read.csv("data\\stormData.bz2")
+```
+
+```{r}
+# first look at data
+str(storm)
+
+# selecting fields relevant to the analysis
+stormSelect <- select (storm, BGN_DATE, STATE, EVTYPE, FATALITIES, PROPDMG, PROPDMGEXP, CROPDMG, CROPDMGEXP)
+
+# looking at fatalities + magnitude fields for damages - expecting only K,M,B: K for thousands, M for millions and B for billions
+table (stormSelect$FATALITIES)
+table (stormSelect[stormSelect$PROPDMG > 0, ]$PROPDMGEXP)
+table (stormSelect[stormSelect$CROPDMG > 0, ]$CROPDMGEXP)
+```
+
+```{r}
+# cleaning up property damages: we count them only if they have a proper unit
+stormSelect <- mutate (stormSelect, prop_dmg = ifelse(PROPDMGEXP == "b" | PROPDMGEXP == "B", PROPDMG*10^9, 
+                                               ifelse(PROPDMGEXP == "m" | PROPDMGEXP == "M", PROPDMG*10^6,
+                                               ifelse(PROPDMGEXP == "k" | PROPDMGEXP == "K", PROPDMG*10^3, 0))))
+
+# cleaning up crop damages: we count them only if they have a proper unit
+stormSelect <- mutate (stormSelect, crop_dmg = ifelse(CROPDMGEXP == "b" | CROPDMGEXP == "B", CROPDMG*10^9, 
+                                               ifelse(CROPDMGEXP == "m" | CROPDMGEXP == "M", CROPDMG*10^6,
+                                               ifelse(CROPDMGEXP == "k" | CROPDMGEXP == "K", CROPDMG*10^3, 0))))
+
+# we drop all events that have neither fatalities nor damages
+stormSelectFilter <- filter (stormSelect, FATALITIES > 0 | prop_dmg > 0 | crop_dmg > 0) %>% 
+                     select (BGN_DATE, STATE, EVTYPE, FATALITIES, prop_dmg, crop_dmg)
+
+# we drop all unsued levels
+stormSelectFilter <- droplevels (stormSelectFilter)
+levels(stormSelectFilter$EVTYPE) <- toupper(levels(stormSelectFilter$EVTYPE))
+
+str(stormSelectFilter)
+
+# creating df with evtype
+stormCondensed <- as.data.frame(group_by(stormSelectFilter, EVTYPE) %>% summarize(count=n(),
+                                                                        victims=sum(FATALITIES),
+                                                                        pdmg=sum(prop_dmg),
+                                                                        cdmg=sum(crop_dmg) ) %>% arrange(desc(count)))
+```
+
+```{r}
+
+# normalizing event types using the Storm Data Event Table
+stormCondensed$EVTYPE2 <- decodeList (stormCondensed$EVTYPE, "OTHER", list(
+                                      c("ASTRONOMICAL LOW TIDE"), "ASTRONOMICAL LOW TIDE",
+                                      c("AVALANCHE", "AVALANCE"), "AVALANCHE",
+                                      c("BLIZZARD"), "BLIZZARD",
+                                      c("COASTAL FLOOD", "COASTAL  FLOOD"), "COASTAL FLOOD",
+                                      c("LAKESHORE FLOOD"), "LAKESHORE FLOOD",
+                                      c("TORNADO", "TORNDAO"), "TORNADO",
+                                      c("TSUNAMI"), "TSUNAMI",
+                                      c("HURRICANE", "TYPHOON"), "HURRICANE/TYPHOON",
+                                      c("WATERSPOUT"), "WATERSPOUT",
+                                      c("STORM SURGE","STORM TIDE"), "STORM SURGE/TIDE",
+                                      c("MARINE THUNDESRSTORM", "MARINE TSTM"), "MARINE THUNDERSTORM WIND",
+                                      c("TSTM", "TUNDERSTORM", "THUNDERSTORM", "THUDERSTORM", "THUNDERTORM", "THUNERSTORM", "THUNDERESTORM", "THUNDEERSTORM", "THUNDERSTROM"), "THUNDERSTORM WIND",
+                                      c("ICE STORM"), "ICE STORM",
+                                      c("WINTER STORM"), "WINTER STORM",
+                                      c("WINTER WEATHER"), "WINTER WEATHER",
+                                      c("TROPICAL STORM"), "TROPICAL STORM",
+                                      c("TROPICAL DEPRESSION"), "TROPICAL DEPRESSION",
+                                      c("LANDSLIDE"), "LANDSLIDE",
+                                      c("DUST DEVIL"), "DUST DEVIL",
+                                      c("DUST STORM"), "DUST STORM",
+                                      c("DROUGHT"), "DROUGHT",
+                                      c("EXCESSIVE HEAT", "EXTREME HEAT", "RECORD HEAT", "UNSEASONABLY WARM"), "EXCESSIVE HEAT",
+                                      c("HEAT"), "HEAT",
+                                      c("EXTREME COLD", "RECORD COLD", "EXTREME WINDCHILL", "UNSEASONABLY COLD", "UNSEASONABLE COLD"), "EXTREME COLD/WIND CHILL",
+                                      c("COLD", "LOW TEMPERATURE"), "COLD/WIND CHILL",
+                                      c("FLASH FLOOD", "FLASHFLOOD"), "FLASH FLOOD",
+                                      c("FLOOD", "FLD"), "FLOOD",
+                                      c("MARINE HIGH WIND"), "MARINE HIGH WIND",
+                                      c("HIGH WIND"), "HIGH WIND",
+                                      c("MARINE HAIL"), "MARINE HAIL",
+                                      c("HAIL"), "HAIL",
+                                      c("HIGH SURF", "HEAVY SURF"), "HIGH SURF",
+                                      c("RIP CURRENT"), "RIP CURRENT",
+                                      c("SLEET"), "SLEET",
+                                      c("LIGHTNING", "LIGHTING", "LIGNTNING"), "LIGHTNING",
+                                      c("MARINE STRONG WIND"), "MARINE STRONG WIND",
+                                      c("STRONG WIND"), "STRONG WIND",
+                                      c("WINTER STORM"), "WINTER STORM",
+                                      c("FROST", "FREEZE"), "FROST/FREEZE",
+                                      c("HEAVY SNOW", "EXCESSIVE SNOW"), "HEAVY SNOW",
+                                      c("LAKE-EFFECT SNOW"), "LAKE-EFFECT SNOW",
+                                      c("FREEZING FOG"), "FREZZING FOG",
+                                      c("FOG"), "DENSE FOG",
+                                      c("HEAVY RAIN"), "HEAVY RAIN",
+                                      c("DEBRIS FLOW"), "DEBRIS FLOW",
+                                      c("DENSE SMOKE"), "DENSE SMOKE",
+                                      c("FUNNEL CLOUD"), "FUNNEL CLOUD",
+                                      c("SEICHE"), "SEICHE",
+                                      c("VOLCANIC ASH"), "VOLCANIC ASH",
+                                      c("WILDFIRE", "WILD/FOREST FIRE", "WILD FIRES", "WILDFIRES", "FOREST FIRES"), "WILDFIRE"))
+
+
+stormFinal <- as.data.frame(group_by(stormCondensed, EVTYPE2) %>% summarize(events=sum(count),
+                                                                            victims=sum(victims),
+                                                                            pdmg=sum(pdmg),
+                                                                            cdmg=sum(cdmg) ) %>% arrange(desc(events)))
+
+stormFinal
+levels(stormFinal$EVTYPE2)
+stormFinal$EVTYPE2 <- factor(stormFinal$EVTYPE2)
+str (stormFinal)
+
+```
+
+
+## Results
+
+
+```{r}
+
+stormVictims <- arrange (stormFinal, desc(victims)) %>% filter(row_number()<=10) %>% select (EVTYPE2, victims)
+stormVictims$EVTYPE2 <- with (stormVictims, factor(EVTYPE2, levels = EVTYPE2[order(victims, decreasing = T)]))
+stormVictims <- rbind(stormVictims, data.frame(EVTYPE2=as.factor("OTHER"), victims=sum(stormFinal$victims) - sum(stormVictims$victims)))
+
+g = qplot(data=stormVictims, x=EVTYPE2, y=victims) +
+    geom_bar(stat="identity") +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+g
+
+```
+
+```{r}
+
+stormPdmg <- arrange (stormFinal, desc(pdmg)) %>% filter(row_number()<=10) %>% select (EVTYPE2, pdmg)
+stormPdmg$EVTYPE2 <- with (stormPdmg, factor(EVTYPE2, levels = EVTYPE2[order(pdmg, decreasing = T)]))
+stormPdmg <- rbind(stormPdmg, data.frame(EVTYPE2=as.factor("OTHER"), pdmg=sum(stormFinal$pdmg) - sum(stormPdmg$pdmg)))
+
+g = qplot(data=stormPdmg, x=EVTYPE2, y=pdmg) +
+    geom_bar(stat="identity") +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+g
+
+```
+
+```{r}
+
+stormCdmg <- arrange (stormFinal, desc(cdmg)) %>% filter(row_number()<=10) %>% select (EVTYPE2, cdmg)
+stormCdmg$EVTYPE2 <- with (stormCdmg, factor(EVTYPE2, levels = EVTYPE2[order(cdmg, decreasing = T)]))
+stormCdmg <- rbind(stormCdmg, data.frame(EVTYPE2=as.factor("OTHER"), cdmg=sum(stormFinal$cdmg) - sum(stormCdmg$cdmg)))
+
+g = qplot(data=stormCdmg, x=EVTYPE2, y=cdmg) +
+    geom_bar(stat="identity") +
+    theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+g
+
+```
+
+
+
+```{r}
+
+# update tick marks
+g = g + scale_x_continuous(minor_breaks = seq(0, 25000, 1000), breaks = seq(0, 25000, 5000)) +
+        scale_y_continuous(minor_breaks = seq(0, 20, 1), breaks = seq(0, 20, 5))
+
+# add title & theme
+g = g + xlab("Number of daily steps") +
+        ggtitle ("Fig. 3: Histogram of daily steps - with vs w/o NA") +
+        theme(title=element_text(size = 10, colour = 'black'),
+        plot.title=element_text(face='italic', vjust=2))
+
+# mean & median vertical lines + annotate
+g = g + geom_vline (aes(xintercept=myMean), color='salmon2', lwd=1, data=myMeanMedian)
+g = g + geom_vline (aes(xintercept=myMedian), color='blue2', lwd=1, data=myMeanMedian)
+  
+g = g + geom_text(data = myMeanMedian, x = 22000, y = 15, hjust = 1, size=3,
+                 aes(label = paste("mean: ", myMean,"\nmedian: ", myMedian)))
+  
+
+g
+```
+
