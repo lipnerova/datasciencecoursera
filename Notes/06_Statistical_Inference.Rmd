@@ -1,12 +1,15 @@
 ---
 title: "Statistical Inference"
-output: pdf_document
+author: "Sébastien Plat"
+output: 
+  pdf_document:
+    toc: yes
 ---
 
-```{r, echo=FALSE,warning=FALSE,message=FALSE}
+```{r setup, echo=FALSE,warning=FALSE,message=FALSE}
 a4width<- 8.3
 a4height<- 11.7
-source("D:\\datascience\\multiplot.R")
+source("..\\Courses projects\\multiplot.R")
 library(ggplot2)
 library(dplyr)
 library(reshape2)
@@ -15,7 +18,52 @@ lambda <- 0.2
 expected_mean <- 1/lambda     
 ```
 
+\pagebreak
+
+# Statistical Inference 
+
+## Definition 
+
+Statistical inference is the process of drawing general conclusions about a population by:
+
++ using noisy **statistical data** (samples)
++ quantifying the **uncertainty** associated with those conclusions
+
+_Note: The uncertainty could arise from incomplete or bad data._
+
+## Terms
+
+First, a **statistic** (singular) is a number computed from a **sample of data**. We use statistics to infer information about a population.
+
+Second, a **random variable** is an **outcome from an experiment**. 
+Deterministic processes, such as computing means or variances, applied to random variables, produce additional random variables which have their own distributions. 
+
+Random variables are said to be iid if they are **independent and identically distributed**. 
+
++ **Independent** means "statistically unrelated from one another"
++ **Identically distributed** means that "all have been drawn from the same population distribution"
+
+IID random variables are the default model for random samples; many of the important theories assume that variables are iid.
+We'll usually assume that our samples are random and that variables are iid.
+
+\  
+
+Finally, there are two broad flavors of inference:
+
++ **Frequency**, which uses "long run proportion of times an event occurs in iid repetitions." 
++ **Bayesian**, in which the probability estimate for a hypothesis is updated as additional evidence is acquired. 
+
+Both flavors require an understanding of probability: quantifying the likelihood of particular events occurring.
+For a given experiment, the probability of a particular outcome is the number of ways that outcome can occur divided by all the possible outcomes.
+
+_Please refer to **SI01 - probability.md** to know more about probabilities._
+
+\pagebreak
+
+
 # Exponential Distribution
+
+_Please refer to **SI03 - common distributions.md** to know more about Binomial, Gaussian and Poisson distributions._
 
 ## Definition
 
@@ -32,7 +80,7 @@ In our example, we will use **$\lambda$=0.2**.
 
 ## Samples mean & variance
 
-Samples mean & sample variance are **consistent estimators** of the populations mean & variance: 
+According to the Law of Large Numbers, samples mean & sample variance are **consistent estimators** of the populations mean & variance: 
 they converge to the correct value as the number of samples increases.
 
 Let's study the distribution of 1000 averages of 40 exponentials. Fig.1 and Fig.2 show the distribution of sample mean & sample variance, plus their mean and theoretical values:
@@ -85,17 +133,21 @@ rm (p1,p2,mns_var)
 
 ```
 
-We clearly see that **their mean is close to the value they estimate**. 
+We clearly see that **their mean is close to the value they estimate**.
+
+_Please refer to **SI02 - random variables.md** to know more about probability distributions, mean and variance._
 
 \pagebreak
 
-# Central Limit Theorem
+# Asymptotics & Central Limit Theorem
 
 ## Definition
 
+**Asymptotics** describes how statistics behave as sample sizes get very large and approach infinity. This is useful for making **statistical inferences** and approximations.
+
 The **Central Limit Theorem** states that, according to the Law of Large Numbers:
 
-> The **sample mean distribution** of iid variables (mean = $\mu$, sd = $\sigma$) will become **normal**, 
+> The **distribution $\bar X$ of sample means** of iid obeservations (from a population of mean = $\mu$, sd = $\sigma$) will become **normal**, 
 > or nearly normal, as the sample size n increases. It will be approximated by:
 
 > **$\bar X \sim N~(\mu, \sigma^2 / n)$**
@@ -237,6 +289,7 @@ $$\frac{\bar X - \mu}{S /\sqrt{n}}$$
 
 follows a $t$-distribution with n-1 degrees of freedom _(replacing $S$ by $\sigma$ would give exactly a 
 standard normal)_. Its tails are **thicker than normal**, so its Confidence Interval is **wider** for the same Confidence Level.
+This is because estimating the population standard deviation introduces more uncertainty.
 
 ## Example
 
@@ -445,7 +498,7 @@ print(result)
 ```
 
 The T Confidence Interval does not include 0 and P < 0.005, so **drug N°2 is statistically more efficient than
-drug N°1**.
+drug N°1**: with 95% probability, the average difference of effects for an individual patient is between .7 and 2.46 additional hours of sleep.
 
 \pagebreak
 
@@ -508,16 +561,17 @@ rm(p1,sleep)
 
 ## Principle
 
-Hypothesis testing is the use of statistics to determine the **probability that a given hypothesis is true**. 
+Hypothesis testing is the use of statistics to determine the **probability that a given hypothesis is true**. It is used to make decisions about populations using observed data.
 
 The usual process of hypothesis testing consists of four steps:
 
 1. **Formulate** the null hypothesis $H_0$ and the alternative hypothesis $H_a$. Commonly:
 
-    +  $H_0$: the observations are the result of pure chance
-    +  $H_a$: the observations show a real effect combined with a component of chance variation
+    + $H_0$: the observations are the result of pure chance
+    + $H_a$: the observations show a real effect combined with a component of chance variation
+    + **Statistical evidence** is required to reject H_0 in favor of the alternative hypothesis
 
-2. Identify a **test statistic** that can be used to assess the truth of H_0.
+2. Identify a **test statistic** that can be used to assess the truth of H_0. 
 
 3. **Compute** the P-value. The **smaller** the P-value, the **stronger** the evidence **against $H_0$**.
 
@@ -539,15 +593,20 @@ $H_0$ | $H_a$ | Type I error $\alpha$ |
 $H_a$ | $H_a$ | Correctly reject null |
 $H_a$ | $H_0$ | Type II error $\beta$ |
 
++ Type I error: REJECTS a TRUE null hypothesis $H_0$
++ Type II error: ACCEPTS a FALSE null hypothesis $H_0$
+
+Since there's some element of **uncertainty** in questions concerning populations, we deal with **probabilities**. In our hypothesis testing we'll set the probability of **making errors small**.
+
+The probabilities of making these two kinds of errors are related. If you decrease the probability of making a Type I error (rejecting a true hypothesis), 
+you increase the probability of making a Type II error (accepting a false one) and vice versa.
 
 ## P-value and Alpha
 
-The P-value is:
-
-> the probability that a test statistic at least as significant as the one observed 
+> The **P-value** is the probability that a test statistic at least as significant as the one observed 
 > would be obtained if $H_0$ were true.
 
-It means that $\alpha$ is the **Type I error rate** = Probability of rejecting $H_0$ when it is correct.
+We reject $H_0$ when P < $\alpha$. It means that $\alpha$ is the **Type I error rate** or **level** 3= Probability of rejecting $H_0$ when it is correct.
 
 
 \pagebreak
@@ -599,15 +658,22 @@ The same works in reverse; if a $(1-\alpha)100\%$ interval contains $\mu_0$, the
 
 # Power
 
+## Definition
+
 A type II error is **failing to reject $H_0$ when it's false**. Its probability is usually called $\beta$.
 
-Its opposite is the **probability of rejecting $H_0$ when it is false**. It is called **power**: $power = 1- \beta$.
+Its opposite is the **probability of rejecting $H_0$ when it is false**. It is called **power**: $power = 1- \beta$
 
 Reminder: $\alpha$ is the **probability of rejecting $H_0$ when it is correct**.
 
-## Example
+Power comes into play when you're designing an experiment, and in particular, if you're trying to determine **if a null result**
+(failing to reject a null hypothesis) is **meaningful**.
 
-Let's consider the hypothesis $H_a: \mu = \mu_a > \mu_0$. In that case **(same for $t$-tests:** `power.t.test`):
+For instance, you might have to determine if your sample size was big enough to yield a meaningful, rather than random, result.
+
+## Link with Type I Error
+
+Let's consider the hypothesis $H_a: \mu = \mu_a > \mu_0$. In that case **(same for $t$-tests)**:
 
 $$\alpha = P\left(TS > Z_{1-\alpha} ~;~ \mu = \mu_0 \right)~~\bullet~~Power = P\left(TS > Z_{1-\alpha} ~;~ \mu = \mu_a \right)$$
 
@@ -619,6 +685,32 @@ Power increases as:
 + S decreases
 
 \  
+
+If $H_a: mu \neq mu_0$ we would calculate the one sided power using alpha / 2 in the direction of mu_a (This is only
+approximately right, it excludes the probability of getting a large test statistic in the opposite direction of the truth).
+As $\alpha$ is bigger than $\alpha/2$, power of a one-sided test is greater than the power of the associated two sided test.
+
+## Calculating Power
+
+The quantities $mu_0$ and $\alpha$ are specified by the test designer. The other four quantities ($\beta$, $\sigma$, $n$, and $\mu_a$), are all unknown. 
+Knowing three of these, we can solve for the missing fourth: usually $power = 1 -\beta$ or the sample size $n$.
+
+Note that:
+
++ only the TS $\sqrt{n}*(\mu_a - \mu_0) /\sigma$ is needed
++ $(\mu_a - \mu_0) /\sigma$ is called the **effect size**: the difference in the means in standard deviation units.
++ the effect size is **unit free**, so it can be interpreted in different settings.
+
+We can calculate the Power in R: 
+
+```{r eval=FALSE}
+power.t.test (n = sampleSize, delta = mu_a - mu_0, sd = sigma, ...)$power # power for a fixed setting
+power.t.test (power = requiredPower, delta = mu_a - mu_0, sd = sigma, ...)$n # n for specific power
+```
+
+\pagebreak
+
+## Example
 
 Fig.10-11 show an example of $H_a: \mu_a < \mu_0$ and an example of $H_a: \mu_a > \mu_0$. The vertical black bar 
 shows the measured mu value below or above which we can statistically reject $H_0$ ($\alpha = 0.05$), and the corresponding
@@ -703,3 +795,123 @@ rm (mu0,myplot) # comment out when using manipulate
 ```
 
 
+\pagebreak
+
+# Multiple Testings
+
+Multiple testing is particularly relevant now in this age of BIG data. Statisticians are tasked with questions such as:
+
++ Which variables matter among the thousands measured?
++ How do you relate unrelated information?
+
+When doing a large number of tests, even small Type I/Type II Error Rates can lead to many erroneous results. Technics exist to
+limit this.
+
+
+## Type of errors
+
+When performing m tests on $H_0$ vs $H_a$, we have the following outcomes:
+
+
+  Test Result    | Chosen Hyp    | $H_0$ is true | $H_a$ is true | N° of results  | Accuracy Rate
+ :--------------:|:-------------:|:-------------:|:-------------:|:--------------:|:-----------------------
+  $P > \alpha$ _(negative)_  | $H_0$         | U             | T [$\beta$]   | $m - R$        | Specificity: $U/(m-R)$
+  $P < \alpha$ _(positive)_  | $H_a$         | V [$\alpha$]  | S             | $R$            | Sensitivity: $S/R$
+  --             | N° of tests   |$m_0$          | $m - m_0$     | $m$            | 
+
+
++ Type I error _(false positive)_: V results. Say $H_0$ is false when it is not 
++ Type II error _(false negative)_: T results. Say $H_0$ if true when it is not
+
+_Note: we reject $H_0$ when outcomes are considered significant (ie. positive), ie P < $\alpha$._
+
+## Error rates
+
+__False positive rate__ - The rate at which false results (falsely rejecting $H_0$) are called significant: $E\left[\frac{V}{m_0}\right]$
+
+__Family wise error rate (FWER)__ - The probability of at least one false positive ${\rm Pr}(V \geq 1)$
+
+__False discovery rate (FDR)__ - The rate at which claims of significance are false: $E\left[\frac{V}{R}\right]$
+
+
+## Control FWER: Bonferroni correction
+
+Idea: $Pr(V \geq 1) < \alpha$ 
+
++ Set $\alpha_{fwer} = \alpha/m$
++ Call any  $P_{(i)} \leq \alpha_{fwer}$ significant
+
+__Pros__: conservative
+__Cons__: May be very conservative
+
+
+## Controlling FDR: Benjamini-Hochberg method (BH)
+
+Idea: $E\left[\frac{V}{R}\right] < \alpha$ 
+
++ Order the P-values from smallest to largest $P_{(1)},...,P_{(m)}$
++ Call any $P_{(i)} \leq \alpha \times \frac{i}{m}$ significant
+
+__Pros__: less conservative (maybe much less)
+__Cons__: more false positives, may behave strangely under dependence
+
+\pagebreak
+
+## Example
+
+```{r}
+# 50% true positive: y = f(x)
+set.seed(1010093) 
+pValues <- rep(NA, 1000) 
+for (i in 1:1000) {    
+  x <- rnorm(20)    
+  # First 500 beta=0, last 500 beta=2  (regression slope) 
+  if (i <= 500) { y <- rnorm(20) }
+  else { y <- rnorm(20, mean = 2 * x) }
+  pValues[i] <- summary(lm(y ~ x))$coeff[2, 4]
+} 
+
+# not zero = significant; We get 24 False positive - around 5%
+trueStatus <- rep(c("zero", "not zero"), each = 500)
+table(pValues < 0.05, trueStatus)
+
+# Controls FWER - no more false positive, but the threshold is so low we now have 23 false negative
+table(p.adjust(pValues, method = "bonferroni") < 0.05, trueStatus)
+
+# Controls FDR - less false positive, no false negative
+table(p.adjust(pValues, method = "BH") < 0.05, trueStatus)
+```
+
+\pagebreak
+
+# Resampling
+
+## Bootstrapping
+
+Bootstrapping is a technique that uses simulation and computation to infer **distributional properties** you might not otherwise be able to determine.
+
+Its basic principle is to use OBSERVED data as a **substitute for the population**. We can simulate observations by doing **random sampling with replacement**. 
+From this distribution (constructed from the observed data), we can **estimate the distribution** of the statistic we're interested in. This lets us better
+understand the underlying population (from which we didn't have enough data).
+
+We can easily do it in R _(see also the R package bootstrap)_:
+
+```{r eval=FALSE}
+# create a matrix of N new samples of the same size as obsData
+newMatrix <- matrix (sample (obsData, obsSize*N,replace=TRUE), N, obsSize)
+
+# calculate the statistic value of each new sample (here, the median)
+statVector <- apply (newMatrix, 1, median)
+
+# calculate a CI for the resulting statistic
+quantile(statVector, c(.025,.975))
+```
+
+
+## Permutation testing
+
+Permutation testins is also based on resampling a single dataset, but it measures whether or not outcomes are independent of group identity 
+(ie. if group labels are exchangable). The resampling simply permute group labels associated with outcomes.
+
+The idea is to see if the dataset value is statistically likely when the outcomes are independent of group identity. 
+To do so, we can estimate the statistic distribution by resampling, and calculate P.
