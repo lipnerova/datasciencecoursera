@@ -1,7 +1,9 @@
 ---
 title: "Statistical Inference"
 author: "Sébastien Plat"
-output: 
+output:
+  html_document:
+    toc: yes
   pdf_document:
     toc: yes
 ---
