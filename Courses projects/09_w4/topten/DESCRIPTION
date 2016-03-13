@@ -1,0 +1,12 @@
+Package: topten
+Type: Package
+Title: Building a Prediction Model from Top 10 Features
+Version: 0.1
+Date: 2016-03-12
+Author: Xoxo
+Maintainer: Xoxo <xoxo@xoxo.net>
+Description: Functions for building and predicting from models from selecting
+    the top 10 predictors in a dataset
+License: GPL-3
+LazyData: TRUE
+RoxygenNote: 5.0.1
