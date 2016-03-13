@@ -1,0 +1,465 @@
+---
+title: "Machine Learning"
+author: "Sébastien Plat"
+output:
+  pdf_document:
+    toc: yes
+---
+
+```{r setup, echo=FALSE,warning=FALSE,message=FALSE}
+a4width<- 8.3
+a4height<- 11.7
+source("..\\Courses projects\\multiplot.R")
+library(datasets);library(UsingR);library(kernlab);library(ISLR)
+library(gridExtra)
+library(ggplot2)
+library(dplyr)
+library(Hmisc)
+library(reshape2)
+library(pander)
+library(caret)
+library(knitr)
+opts_chunk$set(message = F, error = F, warning = F, comment = NA, fig.align = 'center')
+```
+
+\pagebreak
+
+# R Caret Package
+
+Useful links: [introducing caret](http://www.jstatsoft.org/v28/i05/paper),
+              [r-project](http://caret.r-forge.r-project.org/),
+              [tutorials](http://www.edii.uclm.es/~useR-2013/Tutorials/kuhn/user_caret_2up.pdf),
+              [vignette](http://cran.r-project.org/web/packages/caret/vignettes/caret.pdf),
+              [Model training and tuning](http://caret.r-forge.r-project.org/training.html),
+              [ggplot2 tutorial](http://rstudio-pubs-static.s3.amazonaws.com/2176_75884214fc524dc0bc2a140573da38bb.html),
+              [caret visualizations](http://caret.r-forge.r-project.org/visualizations.html),
+              [preprocessing with caret](http://caret.r-forge.r-project.org/preprocess.html),
+              [Elements of Statistical Learning](http://statweb.stanford.edu/~tibs/ElemStatLearn/),
+              [Elements of statistical learning](http://www-stat.stanford.edu/~tibs/ElemStatLearn/),
+              [Modern applied statistics with S](http://www.amazon.com/Modern-Applied-Statistics-W-N-Venables/dp/0387954570),
+              [Introduction to statistical learning](http://www-bcf.usc.edu/~gareth/ISL/),
+
+
+## Caret functionality
+
+* Some preprocessing (cleaning)
+  * preProcess
+* Data splitting
+  * createDataPartition
+  * createResample
+  * createTimeSlices
+* Training/testing functions
+  * train
+  * predict
+* Model comparison
+  * confusionMatrix
+
+
+## Machine learning algorithms in R
+
+* Linear discriminant analysis
+* Regression
+* Naive Bayes
+* Support vector machines
+* Classification and regression trees
+* Random forests
+* Boosting
+* etc. 
+
+\pagebreak
+
+# Plotting (Wages example)
+
+The test set should never be used for exploration: plots should focus on the training set only. Things of interest are:
+
++ Imbalance in outcomes/predictors
++ Outliers / Groups of points not explained by a predictor
++ Skewed variables 
+
+
+```{r loadData, echo=FALSE, eval=FALSE}
+data(Wage)
+summary(Wage)
+```
+
+```{r trainingTest,dependson="loadData"}
+# Get training/test sets (70% of samples in the training set)
+inTrain <- createDataPartition(y=Wage$wage, p=0.7, list=FALSE)
+training <- Wage[inTrain,]
+testing <- Wage[-inTrain,]
+```
+
+## Feature plot
+
+```{r ,dependson="trainingTest",fig.height=0.6*a4width,fig.width=0.6*a4width,cache=TRUE}
+# Feature plot (*caret* package)
+featurePlot(x=training[,c("age","education","jobclass")],
+            y = training$wage,
+            plot="pairs")
+```
+
+\pagebreak
+
+## Cloud of points
+
+```{r ,dependson="trainingTest",fig.height=0.6*a4height,fig.width=0.85*a4width,cache=TRUE}
+# Qplot with color (*ggplot2* package)
+qq1 <- qplot(age,wage,colour=jobclass,data=training) + xlab("")
+  
+# Add regression smoothers (*ggplot2* package)
+qq2 <- qplot(age,wage,colour=education,data=training)
+qq2 <- qq2 + geom_point(size=1) + geom_smooth(method='lm',formula=y~x)
+
+grid.arrange(qq1, qq2, nrow=2, bottom="Wage")
+```
+
+\pagebreak
+
+## Boxplot
+
+Using the `cut2` function of package Hmisc is very useful to create factors from continuous variables:
+
+```{r cut2,dependson="trainingTest",fig.height=4,fig.width=3}
+# cut2, making factors (*Hmisc* package)
+cutWage <- cut2(training$wage,g=3)
+t1 <- table(cutWage,training$jobclass)
+
+pander(cbind(Total=table(cutWage), t1, prop.table(t1,1)), split.table=Inf, digits=3, 
+       caption="Wage groups")
+```
+
+```{r, fig.height=4,fig.width=6}
+# Boxplots with points overlayed
+p1 <- qplot(cutWage,age, data=training,fill=cutWage,
+      geom=c("boxplot")) + theme(legend.position="none")
+
+p2 <- qplot(cutWage,age, data=training,fill=cutWage,
+      geom=c("boxplot","jitter")) + theme(legend.position="none") + ylab("")
+
+grid.arrange(p1,p2,ncol=2)
+```
+
+\pagebreak
+
+## Density Plot
+
+```{r ,dependson="trainingTest",fig.height=3,fig.width=5}
+# Density plots
+qplot(wage,colour=education,data=training,geom="density")
+```
+
+\pagebreak
+
+# Data splitting (Spam example) 
+
+_Note: the spam dataset has 4601 observations._
+
+```{r, echo=FALSE}
+# data splitting
+data(spam)
+```
+
+## Training vs Test set
+
+```{r loadPackage}
+# data splitting - 75% of obsevations in the training set
+set.seed(3323)
+inTrain <- createDataPartition(y=spam$type, p=0.75, list=FALSE)
+
+training <- spam[inTrain,]
+testing <- spam[-inTrain,]
+```
+
+## Cross Validation - k folds
+
+Cross-validation is used to estimate how the model fit a data set not used to train the model, but without using our test set (only used to test the accuracy of the final model). More information on [Wikipedia](https://en.wikipedia.org/wiki/Cross-validation_(statistics)).
+
+In k-folds CV, the training set is divided in k folds of equal sizes. The model is then applied $k$ times, using k-1 folds for training the remaining one for validation. The k results can then be averaged (or otherwise combined) to produce a single estimation.
+
+In the SPAM example, each training set will have $0.9 \times 4601 \simeq 4140$ observations and each test set $0.1 \times 4601 \simeq 460$.
+
+```{r kfold,dependson="loadPackage"}
+# k-fold - for cross validation purpose
+set.seed(32323)
+foldsT <- createFolds(y=spam$type, k=10, list=TRUE, returnTrain=TRUE) #10x 4140 obs.
+foldsF <- createFolds(y=spam$type, k=10, list=TRUE, returnTrain=FALSE) #10x 460 obs.
+```
+
+## Cross Validation - Bootstrap resampling
+
+```{r resample,dependson="loadPackage"}
+# bootstrap resampling - 10 resamples of 4601 observations with replacement
+set.seed(32323)
+folds <- createResample(y=spam$type, times=10, list=TRUE)
+```
+
+## Time slices
+
+```{r time,dependson="loadPackage"}
+# time slices
+set.seed(32323)
+tme <- 1:1000
+folds <- createTimeSlices(y=tme, initialWindow=20, horizon=10)
+# returns folds$train & folds$testing
+```
+
+```{r, echo=FALSE}
+t1 <- cbind(Folds=c("Training","Test"), r1=c("1:20","21:30"), r2=c("2:21","22:31"), r3=c("3:22","23:32"))
+pander(t1,split.table=Inf, justify="right")
+```
+
+
+\pagebreak
+
+# Preprocessing (Spam example) 
+
+_Note: it is very important to apply the **proprocessing parameters of the training set** to the test set._
+
+```{r ,dependson="loadPackage",cache=TRUE,fig.height=3.5,fig.width=3.5}
+hist(training$capitalAve,main="",xlab="ave. capital run length")
+```
+
+## Standardizing
+
+```{r ,dependson="loadPackage"}
+# standardizing w/ caret preProcess function (col 58 is our outcome)
+set.seed(32323)
+preObj <- preProcess(training[,-58],method=c("center","scale"))
+trainCapAveS <- predict(preObj,training[,-58])$capitalAve
+testCapAveS <- predict(preObj,testing[,-58])$capitalAve
+```
+
+```{r, echo=FALSE}
+t1 <- rbind(c(set="training",mean=round(mean(training$capitalAve),2), sd=round(sd(training$capitalAve),2)),
+            c(set="trainingStd",mean=round(mean(trainCapAveS),2), sd=round(sd(trainCapAveS),2)),
+            c(set="testStd",mean=round(mean(testCapAveS),2), sd=round(sd(testCapAveS),2)))
+pander(t1,table.split=Inf, justify="right")
+```
+
+\pagebreak
+
+## Standardizing - Box-Cox transforms
+
+```{r ,dependson="loadPackage",cache=TRUE,fig.height=3.5,fig.width=7}
+preObj <- preProcess(training[,-58],method=c("BoxCox"))
+trainCapAveS <- predict(preObj,training[,-58])$capitalAve
+par(mfrow=c(1,2)); hist(trainCapAveS); qqnorm(trainCapAveS)
+```
+
+## Standardizing - Imputing missing data
+
+```{r,dependson="loadPackage"}
+set.seed(32323)
+# Make some values NA
+training$capAve <- training$capitalAve
+selectNA <- rbinom(dim(training)[1],size=1,prob=0.05)==1
+training$capAve[selectNA] <- NA
+```
+
+```{r knn,dependson="loadPackage"}
+# Impute and standardize
+preObj <- preProcess(training[,-58],method="knnImpute")
+capAve <- predict(preObj,training[,-58])$capAve
+
+# Standardize true values
+capAveTruth <- training$capitalAve
+capAveTruth <- (capAveTruth-mean(capAveTruth))/sd(capAveTruth)
+```
+
+```{r, echo=FALSE}
+pander(rbind(c(data="all",round(quantile(capAve - capAveTruth),4)),
+             c(data="NA",round(quantile((capAve - capAveTruth)[selectNA]),4)),
+             c(data="!NA",round(quantile((capAve - capAveTruth)[!selectNA]),4))))
+```
+
+\pagebreak
+
+# Preprocessing with PCA (Spam example)
+
+## Definition
+
+Principal Component Analysis converts observations of possibly correlated variables into values of linearly uncorrelated variables called **principal components** ([Wikipedia](https://en.wikipedia.org/wiki/Principal_component_analysis)). 
+
++ number of principal components $\leq$ number of original variables
++ principal components are ordered in descending variance
+
+**Benefits:**
+
++ Reduced number of predictors (data compression)
++ Uncorrelated variables that explain much of the variance (statistical gain)
++ Reduced noise (due to averaging)
+
+**Limitations:**
+
++ Most useful for linear-type models
++ Can make it harder to interpret predictors
++ Outliers can be misleading
+    + Transform first (with logs/Box Cox)
+    + Plot predictors to identify problems
+
+
+## Spam example
+
+```{r, echo=FALSE}
+set.seed(32323)
+inTrain <- createDataPartition(y=spam$type, p=0.75, list=FALSE)
+training <- spam[inTrain,];testing <- spam[-inTrain,]
+```
+
+```{r ,cache=TRUE,fig.height=3,fig.width=3.5}
+# pca pre-processing - only two pca Components (possible use of ..., thresh=desVar)
+preProc <- preProcess(log10(training[,-58]+1),method="pca",pcaComp=2)
+trainPC <- predict(preProc,log10(training[,-58]+1))
+
+typeColor <- ((training$type=="spam")*1 + 1)
+plot(trainPC[,1],trainPC[,2],col=typeColor)
+```
+
+\pagebreak
+
+### Model with PCA
+
+```{r ,cache=TRUE}
+# we train the model on the PCA data
+modelFit <- train(training$type ~ .,method="glm",data=trainPC)
+
+# we appy the PCA to the test set
+testPC <- predict(preProc,log10(testing[,-58]+1))
+
+# we check the accuracy of the model on the test set
+cmFit <- confusionMatrix(testing$type,predict(modelFit,testPC))
+```         
+
+```{r ,echo=FALSE}             
+pander(cmFit$table)
+pander(cmFit$overall[c(1,3,4)], split.table=Inf)
+```
+
+### Model without PCA
+
+```{r ,cache=TRUE, echo=FALSE}
+modelFit <- train(training$type ~ .,method="glm",data=training)
+cmFit <- confusionMatrix(testing$type,predict(modelFit,testing))
+pander(cmFit$table)
+pander(cmFit$overall[c(1,3,4)], split.table=Inf)
+```
+
+
+\pagebreak
+
+# Covariate creation
+
+Creating covariates from raw data depend heavily on the application. Googling "feature extraction for [data type]" helps finding existing methods for a large variety of topics. 
+
+A few examples of covariates:
+
++ **Text files**: frequency of words, frequency of phrases ([Google ngrams](https://books.google.com/ngrams))or capital letters
++ **Images**: Edges, corners, blobs, ridges ([computer vision feature detection](http://en.wikipedia.org/wiki/Feature_detection_(computer_vision)))
++ **Webpages**: Number and type of images, position of elements, colors, videos ([A/B Testing](http://en.wikipedia.org/wiki/A/B_testing))
++ **People**: Height, weight, hair color, sex, country of origin. 
+
+In some applications (images, voices) automated feature creation is [possible/necessary](http://www.cs.nyu.edu/~yann/talks/lecun-ranzato-icml2013.pdf). 
+
+
+It is possible to transform existing covariates into new ones, based on exploratory analysis for example (that should be done _only on the training set_). Caution is advised though, as it could lead to overfitting.
+
+_Note: It is more useful for some methods (regression, svms) than for others (classification trees)._
+
+## Dummy variables
+
+The basic idea is to **convert factor variables to [indicator variables](http://bit.ly/19ZhWB6)**.
+
+```{r ,cache=TRUE,echo=FALSE}
+inTrain <- createDataPartition(y=Wage$wage, p=0.7, list=FALSE)
+training <- Wage[inTrain,]; testing <- Wage[-inTrain,]
+```
+
+```{r dummyVar, eval=FALSE}
+dummies <- dummyVars(wage ~ jobclass,data=training)
+predict(dummies,newdata=training)
+```
+
+
+## Removing zero covariates
+
+Some covariates bring nothing to the model, either because they have one unique value or because their most common value is much more common than the second one (ie. almost unique value). They can be dropped without impacting the results.
+
+```{r ,dependson="dummyVar"}
+# returns the positions of the zero- or near-zero predictors
+nsv <- nearZeroVar(training)
+```
+
+\pagebreak
+
+## Polynomial covariates (B-Spline fit)
+
+Creates new polynomial covariates, which can be used to fit a polynomial linear model to the data.
+
+_See also_: ns(),poly()
+
+```{r splines,cache=TRUE, fig.height=4,fig.width=4}
+library(splines)
+
+bsBasis <- bs(training$age,df=3) 
+lm1 <- lm(wage ~ bsBasis,data=training)
+
+plot(training$age,training$wage,pch=19,cex=0.5)
+points(training$age,predict(lm1,newdata=training),col="red",pch=19,cex=0.5)
+```
+
+```{r ,dependson="splines", eval=FALSE}
+predict(bsBasis,age=testing$age)
+```
+
+\pagebreak
+
+
+
+
+
+
+
+\pagebreak
+
+# Train options
+
+```{r ,dependson="loadPackage", eval=FALSE}
+args(train.default)
+```
+
+## metric
+
+__Continous outcomes__:
+
++ _RMSE_ = Root mean squared error
++ _RSquared_ = $R^2$ from regression models
+
+__Categorical outcomes__:
+
++ _Accuracy_ = Fraction correct
++ _Kappa_ = A measure of [concordance](http://en.wikipedia.org/wiki/Cohen%27s_kappa)
+
+
+## trainControl
+
+```{r , dependson="loadPackage", eval=FALSE}
+args(trainControl)
+```
+
+__resampling method__:
+
++ _boot_ = bootstrapping
++ _boot632_ = bootstrapping with adjustment
++ _cv_ = cross validation
++ _repeatedcv_ = repeated cross validation
++ _LOOCV_ = leave one out cross validation
+
+__number__:
+
++ For boot/cross validation
++ Either the number of folds or number of resampling iterations
+ 
+__repeats__:
+
++ Number of times to repeate subsampling (repeated k-fold CV only)
++ If big this can _slow things down_
