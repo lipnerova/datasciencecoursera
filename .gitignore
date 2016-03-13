@@ -29,8 +29,8 @@ Linear Models with R - Julian J. Faraway.pdf
 # ============
 data/
 *quizz*
-05_Week4_cache/
-05_Week4_files/
+*_cache/
+*_files/
 
 # Temp
 # ====

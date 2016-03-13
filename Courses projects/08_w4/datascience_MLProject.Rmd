@@ -1,0 +1,152 @@
+---
+title: "Practical Machine Learning Project"
+author: "Sebastien Plat"
+output: 
+  html_document:
+    toc: yes
+---
+
+```{r setup, echo=FALSE,warning=FALSE,message=FALSE}
+a4width<- 8.3
+a4height<- 11.7
+library(pander)
+library(caret)
+library(knitr)
+opts_chunk$set(message = F, error = F, warning = F, comment = NA, fig.align = 'center')
+```
+
+# Synopsis
+
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data 
+about personal activity relatively inexpensively. These type of devices are part of the **quantified self movement** - 
+a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, 
+or because they are tech geeks. One thing that people regularly do is **quantify how much of a particular activity they do**, 
+but they rarely quantify **how well they do it**. 
+
+In this project, your goal will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 young healthy participants. 
+They were asked to perform barbell lifts correctly (class A) and incorrectly in 4 different ways (class B to E):
+
++ exactly according to the specification (Class A)
++ throwing the elbows to the front (Class B)
++ lifting the dumbbell only halfway (Class C)
++ lowering the dumbbell only halfway (Class D)
++ throwing the hips to the front (Class E).
+
+The aim of this work is to investigate the feasibility of **automatically assessing** the quality of execution of weight lifting
+exercises.. 
+
+More information is available [here](http://groupware.les.inf.puc-rio.br/har#weight_lifting_exercises).
+
+The published paper can be found [here](http://groupware.les.inf.puc-rio.br/public/papers/2013.Velloso.QAR-WLE.pdf).
+
+
+The data used for this project has been generously provided by [Groupware@LES](http://groupware.les.inf.puc-rio.br/har).
+
++ training [set](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv)
++ test [set](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv)
+
+
+# Data Cleaning
+
+```{r, cache = TRUE, echo=FALSE}
+# download archive
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
+if (!file.exists("data\\pml-training.csv")) {
+  download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv",
+                "data\\pml-training.csv")
+}
+
+if (!file.exists("data\\pml-testing.csv")) {
+  download.file("https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv",
+                "data\\pml-testing.csv")
+}
+
+# read archive (takes a while)
+training <- read.csv("data\\pml-training.csv")
+testing <- read.csv("data\\pml-testing.csv")
+```
+
+By looking at the training dataset, it seems that **many features are NA or empty** when the feature `new_window`is `FALSE`, which happens for 19216 observations out of 19622 (approx. 98%). We will not keep these features.
+
+_Note: the paper mentions in 5.1 that feature extraction was done with a sliding window approach with different lengths from 0.5 second to 2.5 seconds, with 0.5 second overlap. But we have not been able to find a satisfactory explanation for the new-window feature._
+
+```{r, cache=TRUE}
+# tentative of explaining new_window
+# table(training$num_window, training$new_window, training$user_name)
+
+# counting NA's / empty cells by column
+naCount <- sapply(training, function(y) sum(length(which(is.na(y)))))
+emptyCount <- sapply(training, function(y) sum(length(which(y==""))))
+
+# there are many variables with 19216 NA's / empty cells (approx. 98% ob the observations). we will not keep them 
+naVarPos <- which(naCount==19216)
+emptyVarPos <- which(emptyCount==19216)
+
+# vector of columns to remove: NAs & empty ones
+# we also remove:
+#  + column 1: observation number
+#  + column 2: user name (we want the model to work for unknown users)
+#  + column 3-7: time/window related info
+colsToRemove <- c(1, 2, 3:7, naVarPos, emptyVarPos)
+
+# we remove the unwanted columns
+trainingLight <- training[, -colsToRemove]
+testingLight <-  testing[, -colsToRemove]
+```
+
+
+# Algorithms
+
+As mentioned in the study paper (5.2), we expect a lot of noise in the measurements. So we will use the **Random Forest algorithm** for our classification problem, as it will **limit the risk of overfitting** that could occur with decision trees.
+
+We also use a **10-folds cross validation** to estimate **how accurately our predictive model will perform in practice**. 
+
+Random Forests can be computationnaly expensive, so to train our algorithm faster we:
+
++ apply a PCA pre-processing 
++ limit the number of trees at 10 by forest (instead of the default 500)
+
+
+```{r, cache=TRUE, warning=FALSE}
+set.seed(1)
+
+# we use a 10-folds cross-validation
+fitControl <- trainControl(method = "cv", number = 10)
+
+# training the model with PCA (we use only 10 trees instead of the default 500 to speed up the training)
+modelFit <- train(trainingLight$classe ~ ., method="rf", ntree = 10,
+                  trControl = fitControl, preProcess = "pca", data=trainingLight, importance=TRUE)
+```
+
+The **Out-of-Bag estimate of error rate** is roughly **11%**. It is possible this could be improved by using more trees / more cross-validations, but it seems resonably efficient given the relatively small dataset and computing time.
+
+```{r, cache=TRUE, warning=FALSE}
+# OOB estimate of error rate
+modelFit$finalModel$err.rate[10,1]
+```
+
+The **Confusion Matrix** illustrates how well our final model performs for the training set examples:
+
+```{r, cache=TRUE, warning=FALSE}
+# confusion matrix
+confMatrix <- modelFit$finalModel$confusion
+pander(confMatrix, justify="right", round=c(0,0,0,0,0,3))
+```
+
+
+# Prediction on test set
+
+Lastly, we can predict the class of the 20 test cases:
+
+```{r, cache=TRUE, warning=FALSE}
+classPredict <- as.character(predict(modelFit,newdata=testingLight))
+names(classPredict) <- seq(1,20)
+
+pander(classPredict)
+```
+
+
+
