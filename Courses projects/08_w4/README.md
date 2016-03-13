@@ -1,3 +1,7 @@
+#### HTML page
+
+The HTML version of this analysis can be found [here](http://paulwasit.github.io/datasciencecoursera/MLProject.html).
+
 #### Background
 
 Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data 
@@ -18,6 +22,3 @@ The data used for this project has been generously provided by [Groupware@LES](h
 + training [set](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv)
 + test [set](https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv)
 
-#### HTML page
-
-The HTML version of this analysis can be found [here](http://paulwasit.github.io/datasciencecoursera/MLProject.html).
