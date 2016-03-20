@@ -1,0 +1,42 @@
+---
+title: "MLShort"
+author: "Sebastien Plat"
+output: html_document
+---
+
+```{r setup, echo=FALSE,warning=FALSE,message=FALSE}
+source(".\\rf_train.R")
+library(pander)
+library(caret)
+library(knitr)
+opts_chunk$set(message = F, error = F, warning = F, comment = NA, fig.align = 'center')
+```
+
+```{r}
+training <- read.csv("data\\trainingShortL10.csv")
+testing <- read.csv("data\\testingShortL10.csv")
+```
+
+```{r, echo=FALSE}
+ncv=10;ntree=100
+```
+
+```{r, echo=FALSE}
+system.time(Fit1 <- trainML ("rf", training, "classe", ntree=ntree, cv=TRUE, ncv=ncv, pca=TRUE, thresh=0.97))
+Fit1$finalModel$err.rate[ntree,1]
+confusionMatrix(testing$classe, predict(Fit1, testing))
+```
+
+```{r, echo=FALSE}
+ncv=10;ntree=10
+system.time(Fit2 <- trainML ("rpart", training, "classe", cv=TRUE, ncv=ncv))
+Fit2$finalModel
+confusionMatrix(testing$classe, predict(Fit2, testing))
+```
+
+```{r, echo=FALSE}
+ncv=10;ntree=500
+system.time(Fit3 <- trainML ("gbm", training, "classe", ntree=ntree, cv=TRUE, ncv=ncv))
+Fit3$finalModel
+confusionMatrix(testing$classe, predict(Fit3, testing))
+```
