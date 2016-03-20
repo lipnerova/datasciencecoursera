@@ -21,6 +21,8 @@ body <- dashboardBody(
   tags$head(
     tags$link(rel = "stylesheet", type = "text/css", href = "custom.css")
   ),
+
+# ------------------------------ LEFT PANEL ----------------------------------- #   
   
   fluidRow(
     
@@ -29,21 +31,14 @@ body <- dashboardBody(
            
       # harm map
       box(width = NULL, status = "primary", solidHeader = TRUE, 
-          title = tagList("Impact of extreme weather in the USA", 
+          title = tagList(htmlOutput("chartBoxTitle", container = tags$span, class = "centerSpan"),
                           tags$i(id="mapTT", shiny::icon("question-circle"))),
           bsTooltip("mapTT", 
-                    "you can filter harm types & event types",
+                    "Total per state / per year, for the selected Years & Event Types",
                     "bottom"),
-          #title
-        fluidRow(
-          column(
-            width = 12, 
-            tags$div(
-              htmlOutput("mapTitle", container = tags$span, class = "centerSpan")
-            )
-          )
-        ),
-        
+
+# ------------------------------ MAP ------------------------------------------ # 
+
         #map & legend
         fluidRow(
           column(width=2),
@@ -56,24 +51,33 @@ body <- dashboardBody(
             uiOutput("legend")
           )
         ),
-        hr(),
-        fluidRow(textOutput("value")),
         
-        #histogram
-        fluidRow(
-          column(width=1),
-          column(width=10,
-            tags$div(style="font-weight:bold;",textOutput("histTitle"))
-          )
-        ),
+        #fluidRow(textOutput("value")),
+
+        
+# ------------------------------ HISTOGRAM ------------------------------------ # 
+        
+        hr(),
+        #fluidRow(
+        #  column(width=1),
+        #  column(width=10,
+        #  tags$div(style="font-weight:bold;",textOutput("histTitle"))
+        #  )
+        #),
         fluidRow(
           #column( width = 1),
-          column( width = 12,
+          column( 
+            width = 12,
             showOutput("chart3", "nvd3", package="rCharts"), 
             plotOutput("plot1", height="1px") # to get its width value (as this widget takes 100% width by default)
           )
-        ),
+        )
+      ),
         
+
+# ------------------------------ YEAR SLIDER ---------------------------------- # 
+
+      box(width = NULL, status = "warning", solidHeader = TRUE, 
         # year slider
         fluidRow(
           column( width = 1),
@@ -81,7 +85,7 @@ body <- dashboardBody(
             width = 10,
             sliderInput(
               "yearSlider", 
-              label = "Year Range",
+              label = "",
               step=1,
               sep = "",
               min = 1950, 
@@ -92,15 +96,20 @@ body <- dashboardBody(
         )
       )
     ),
-    
+
+
+# ------------------------------ RIGHT PANEL ---------------------------------- # 
+
     # right panel
     column(width = 3,
-           
+
+# ------------------------------ FILTERING OPTIONS ---------------------------- # 
+
       # Harm Type
       box(width = NULL, status = "warning", solidHeader = TRUE, 
-          title = tagList("Options", tags$i(id="optionsTT", shiny::icon("question-circle"))),
+          title = tagList("Filtering Options", tags$i(id="optionsTT", shiny::icon("question-circle"))),
           bsTooltip("optionsTT", 
-                    "you can filter harm types & event types",
+                    "Event types depend on the harm category; filter by years is available below the histogram",
                     "bottom"),
         #h5("Type"),
         tags$div(style="font-weight:bold;","Harm Category"),
@@ -122,27 +131,43 @@ body <- dashboardBody(
                   selected = harmLevels[["Fatalities"]]
                  )
         ),
-        shinyjs::hidden(uiOutput('trigger1')),
-        shinyjs::hidden(uiOutput('trigger2'))
+        shinyjs::hidden(numericInput("triggerMapUpdate", label="trigger map update", value=0))
       ),
-      
-      # State
+
+
+# ------------------------------ TOP 10 --------------------------------------- # 
+
+      fluidRow(
+        infoBox(width = 12, textOutput("totalTitle"), textOutput("totalValue"), icon = icon("exclamation"), color="light-blue")
+      ),
+
+
+# ------------------------------ TOP 10 --------------------------------------- # 
+
       fluidRow(
         column(width = 12,
           box(width = NULL, status = "primary", solidHeader = TRUE, 
-              title = tagList("Top 10 Events", tags$i(id="top10TT", shiny::icon("question-circle"))),
+              title = tagList("Top 10", tags$i(id="top10TT", shiny::icon("question-circle"))),
               bsTooltip("top10TT", 
-                        "Top 10 Events",
+                        "Top 10",
                         "bottom"),
             
               radioButtons(
                 "radioTop10", 
                 label = NULL,
                 inline = TRUE,
-                choices = c("Top 10 Events", "Event Types"), 
-                selected = "Top 10 Events"
+                choices = c("Events", "Event Types"), 
+                selected = "Events"
               ),
-              DT::dataTableOutput("table")
+              #conditionalPanel(
+              #  condition = "input.radioTop10 == 'Events'",
+                DT::dataTableOutput("table")
+              #),
+              #conditionalPanel(
+              #  condition = "input.radioTop10 == 'Event Types'",
+              #  showOutput("chart4", "highcharts", package="rCharts"), 
+              #  plotOutput("plot2", height="1px") # to get its width value (as this widget takes 100% width by default)
+              #)
           )
         )
       )

@@ -3,6 +3,25 @@ library(ggplot2)
 #server side
 shinyServer(function(input, output, session) {
   
+# ------------------------------ CHARTS BOX TITLE ----------------------------- #  
+  
+  # title for the charts box - indicate if some events have been filtered out
+  output$chartBoxTitle <- renderUI({
+    if (identical(input$eventTypes, harmLevels[[ harmType() ]])) {
+      isSelected <- ""
+    }
+    else {
+      isSelected <- "<b>selected </b>"
+    }
+    HTML(paste(
+      paste0("<b>", input$radioHarmType, "</b> due to ", isSelected, "extreme weather events in the USA, <b>"),
+      ifelse(years()[1]==years()[2], years()[1], 
+             paste(years()[1]," - ",years()[2]))
+    ))
+  })
+  
+  
+  
 # ------------------------------ MAP SETUP ------------------------------------ #  
   
   # USA map data
@@ -18,8 +37,11 @@ shinyServer(function(input, output, session) {
   
   # tooltip displayed when hovering the USA map
   tooltip <- function () {
+    
+    symb <- ifelse(grepl("Dmg", harmType()),'$','')
     ttYears <- ifelse(years()[1]==years()[2], paste(" in",years()[1]), paste(" from",years()[1],"to",years()[2]))
-    ttContent <- paste0("'", input$radioHarmType, ttYears, ":<br><br>' + data.harmValue +")
+    ttContent <- paste0("'", input$radioHarmType, ttYears, ":<br><br>' + d3.round(d3.formatPrefix(data.harmValue).scale(data.harmValue),1) + 
+                                                                         d3.formatPrefix(data.harmValue).symbol +'",symb,"' +")
     return(paste(ttBgn, ttContent, ttEnd))
   }
   
@@ -33,31 +55,12 @@ shinyServer(function(input, output, session) {
   
   # USA map output 
   # updated only after the hist has been updated
-  observeEvent(input$triggerCount1, {
+  observeEvent(input$triggerMapUpdate, {
+    if (input$triggerMapUpdate == 0) return()
     output$chart1 <- renderChart2 ({ isolate(createMap()) }) 
   })
 
   
-  
-# ------------------------------ MAP TITLE ------------------------------------ #  
-  
-  # total recorded harm 
-  totalHarm <- eventReactive(v$mapTrigger, {
-    total <- sum(getMapDB()$harmValue)
-    total <- formatNumbers(total)
-    return(total)
-  })
-  
-  # USA map title output
-  output$mapTitle <- renderUI({ h3(HTML(paste(
-    paste0(input$radioHarmType, ", "),
-    ifelse(years()[1]==years()[2], years()[1], 
-           paste(years()[1]," - ",years()[2])),
-    "</br>Total: ",
-    totalHarm()
-  ))) })
-
-
   
 # ------------------------------ MAP LEGEND ----------------------------------- #  
 # rMaps issue with shiny: the legend is not generated so we create it manually
@@ -94,13 +97,13 @@ shinyServer(function(input, output, session) {
   # legend block: title + items
   createLegend <- eventReactive(v$mapTrigger, {
     tags$div(
-      tags$div(
-        class = "col-xs-12",
-        tags$span(style = sprintf(
-          "font-weight: bold;"),
-          paste(input$radioHarmType,"per state")
-        )
-      ),
+      #tags$div(
+      #  class = "col-xs-12",
+      #  tags$span(style = sprintf(
+      #    "font-weight: bold;"),
+      #    paste(input$radioHarmType,"per state")
+      #  )
+      #),
       legendDiv(getLegendText(getMapDB()))
     )
   })
@@ -115,18 +118,30 @@ shinyServer(function(input, output, session) {
   # histogram
   createHist <- reactive({ 
     
+    # null df
+    null <- data.frame(year=1950:2011, harmValue=0)
+    
     # we create the hist data
     df <- filter(stormList[[harmType()]], eventType %in% input$eventTypes) %>%
           group_by(year) %>%
           summarize(harmValue = sum(harmValue))
     
+    # we keep only the years not in the df
+    null <- null[which(!(null$year %in% df$year)), ]
+    
+    # we add the null years to the df
+    df <- rbind(df, null)
+    
+    # we sort the df so the plot coloring works properly
+    df <- arrange(df, year)
+      
     # we create the hist
     p2 <- nPlot(harmValue ~ year, type = 'historicalBarChart', data = df)
     
     # we specify the width (responsive) & height
     # more details here: http://stackoverflow.com/questions/25371860/automatically-resize-rchart-in-shiny
     p2$addParams(width= session$clientData[["output_plot1_width"]], # here we get the width, 
-                 height=200)
+                 height=250)
     
     #we grey out the unselected years
     p2$params$data$color <- c(rep('#ccc',years()[1] - 1950), 
@@ -151,45 +166,41 @@ shinyServer(function(input, output, session) {
     
   })
   
-  # the triggers are a convoluted way to make the map update only
+  # the trigger is used to update the map only
   # after the histogram has been updated (there seems to be a conflict between
   # rCharts & rMaps during the rendering process)
   # note: the triggers are hidden using shinyjs
+  # note: inspiration found here: http://stackoverflow.com/questions/27827962/r-shiny-bi-directional-reactive-widgets
   observe({
     
     input$eventTypes
     input$yearSlider
     
-    # update the histogram
+    # update the histograms
     output$chart3 <- renderChart2({ isolate(createHist()) })
     
-    # we cannot update variables nor inputs in observe
-    # so we programatically create inputs (via outputs...) that are updated
-    # at the same time as our histogram.
-    # these updates will trigger the map update.
-    # inspiration found here: http://stackoverflow.com/questions/27827962/r-shiny-bi-directional-reactive-widgets
-    output$trigger1 <- renderUI({
-      trigger2.value <- isolate(input$triggerCount2)
-      trigger1.value <- if (is.null(trigger2.value)) 0 else trigger2.value
-      numericInput('triggerCount1', 'Value', value = trigger1.value)
+    # update the input triggerMapUpdate, that will in turn update the USA map
+    isolate(updateNumericInput(session, "triggerMapUpdate", value = input$triggerMapUpdate + 1))
+
     })
-    
-    output$trigger2 <- renderUI({
-      trigger1.value <- isolate(input$triggerCount1)
-      trigger2.value <- if (is.null(trigger1.value)) 1 else trigger1.value
-      numericInput('triggerCount2', 'Value', value = trigger2.value)
-    })
-    
-    #the outputs are hidden (via shinyjs) but we want them to work anyway
-    outputOptions(output, "trigger1", suspendWhenHidden = FALSE)
-    outputOptions(output, "trigger2", suspendWhenHidden = FALSE)
-    
-  })
   
   # histogram title
   output$histTitle <- renderText(paste(input$radioHarmType,"per year"))
   
 
+  
+# ------------------------------ TOTAL HARM BOX ------------------------------- #  
+  
+  # total recorded harm 
+  totalHarm <- eventReactive(v$mapTrigger, {
+    total <- sum(getMapDB()$harmValue)
+    total <- formatNumbers(total)
+    return(total)
+  })
+  
+  output$totalTitle <- renderText(paste("Total", input$radioHarmType))
+  output$totalValue <- renderText(totalHarm())
+  
   
 # ------------------------------ TOP 10 LIST ---------------------------------- #  
   
@@ -224,7 +235,22 @@ shinyServer(function(input, output, session) {
   
   
   
+# ------------------------------ TOP 10 GRAPH --------------------------------- # 
   
+  # histogram
+  createTopHist <- function () { 
+    
+    h1 <- Highcharts$new()
+    h1$chart(type = "spline")
+    h1$series(data = c(1, 3, 2, 4, 5, 4, 6, 2, 3, 5, NA), dashStyle = "longdash")
+    h1$series(data = c(NA, 4, 1, 3, 4, 2, 9, 1, 2, 3, 4), dashStyle = "shortdot")
+    h1$legend(symbolWidth = 80)
+    return(h1)
+    
+  }
+  
+  # this histogram is updated with the other one (see above for more info)
+  output$chart4 <- renderChart2({ createTopHist() })
   
   
 # ------------------------------ REACTIVE VARIABLES --------------------------- #   
@@ -256,10 +282,10 @@ shinyServer(function(input, output, session) {
 # ------------------------------ MISC FUNCTIONS ------------------------------- #   
   
   formatNumbers <- function (x) {
-    newX <- ifelse(x>1e9, paste0(round(x/1e9,1),"B"), 
-                   ifelse(x>1e6, paste0(round(x/1e6,1),"M"),
-                          ifelse(x>1e3, paste0(round(x/1e3,1),"k"),
-                                 x)))
+    newX <- ifelse(x>=1e9, paste0(round(x/1e9,1),"B"), 
+            ifelse(x>=1e6, paste0(round(x/1e6,1),"M"),
+            ifelse(x>=1e3, paste0(round(x/1e3,1),"k"),
+            x)))
     if (grepl("Dmg", harmType())) newX <- paste0(newX,"$")
     return (newX)
   }

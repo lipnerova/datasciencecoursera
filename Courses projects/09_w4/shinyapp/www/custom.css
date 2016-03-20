@@ -110,3 +110,10 @@
 	#height:100px;
 	#width:100px;	
 }
+
+.info-box-content {
+	padding: 13px 10px;
+}
+
+.info-box-text, .info-box-number {
+	font-size: 1.6em;
