@@ -233,25 +233,7 @@ shinyServer(function(input, output, session) {
     )
   )
   
-  
-  
-# ------------------------------ TOP 10 GRAPH --------------------------------- # 
-  
-  # histogram
-  createTopHist <- function () { 
-    
-    h1 <- Highcharts$new()
-    h1$chart(type = "spline")
-    h1$series(data = c(1, 3, 2, 4, 5, 4, 6, 2, 3, 5, NA), dashStyle = "longdash")
-    h1$series(data = c(NA, 4, 1, 3, 4, 2, 9, 1, 2, 3, 4), dashStyle = "shortdot")
-    h1$legend(symbolWidth = 80)
-    return(h1)
-    
-  }
-  
-  # this histogram is updated with the other one (see above for more info)
-  output$chart4 <- renderChart2({ createTopHist() })
-  
+
   
 # ------------------------------ REACTIVE VARIABLES --------------------------- #   
  

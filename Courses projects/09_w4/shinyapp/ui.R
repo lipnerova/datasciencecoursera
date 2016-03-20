@@ -152,13 +152,13 @@ body <- dashboardBody(
                         "Top 10",
                         "bottom"),
             
-              radioButtons(
-                "radioTop10", 
-                label = NULL,
-                inline = TRUE,
-                choices = c("Events", "Event Types"), 
-                selected = "Events"
-              ),
+              #radioButtons(
+              #  "radioTop10", 
+              #  label = NULL,
+              #  inline = TRUE,
+              #  choices = c("Events", "Event Types"), 
+              #  selected = "Events"
+              #),
               #conditionalPanel(
               #  condition = "input.radioTop10 == 'Events'",
                 DT::dataTableOutput("table")
