@@ -1,4 +1,4 @@
-library(dplyr)
+
 library(RColorBrewer)
 
 # specify local port
@@ -10,8 +10,8 @@ options(shiny.port = 8000)
 # ------------------------------ PREPARING DATA --------------------------------------- #
 
 # load DB
-stormClean <- readRDS(".\\data\\stormClean.rds")
-stormList <- readRDS(".\\data\\stormList.rds")
+stormClean <- readRDS("./appdata/stormClean.rds")
+stormList <- readRDS("./appdata/stormList.rds")
 
 # harm types
 harmTypes <- c("Fatalities"="Fatalities", 

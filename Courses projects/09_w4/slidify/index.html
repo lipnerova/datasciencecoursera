@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
+  <title>Exploring the Storm Database</title>
   <meta charset="utf-8">
-  <meta name="description" content="">
-  <meta name="author" content="">
+  <meta name="description" content="Exploring the Storm Database">
+  <meta name="author" content="Sebastien Plat">
   <meta name="generator" content="slidify" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta http-equiv="X-UA-Compatible" content="chrome=1">
@@ -32,9 +32,9 @@
     <!-- LOGO SLIDE -->
         <slide class="title-slide segue nobackground">
   <hgroup class="auto-fadein">
-    <h1></h1>
-    <h2></h2>
-    <p><br/></p>
+    <h1>Exploring the Storm Database</h1>
+    <h2>Revisiting the Reproducible Research project</h2>
+    <p>Sebastien Plat<br/></p>
   </hgroup>
   <article></article>  
 </slide>
@@ -43,14 +43,24 @@
     <!-- SLIDES -->
     <slide class="" id="slide-1" style="background:;">
   <hgroup>
-    <h2>Read-And-Delete</h2>
+    <h2>Introduction</h2>
   </hgroup>
   <article data-timings="">
-    <ol>
-<li>Edit YAML front matter</li>
-<li>Write using R Markdown</li>
-<li>Use an empty line followed by three dashes to separate slides!</li>
-</ol>
+    <p>The idea for this Shiny app came from the Reproducible Research project:</p>
+
+<ul>
+<li>measure the impact of severe wheather events on public health and ecomomy in the US</li>
+<li>based on the analysis of the USA Storm Database</li>
+</ul>
+
+<p>This app aims to provide a <strong>visual exploration of the USA Storm Database</strong>:</p>
+
+<ul>
+<li>impact of severe wheather events by state / by year</li>
+<li>list of the most impactful events </li>
+</ul>
+
+<p>The user should also be able offered several filtering options to navigate the Database content more easily.</p>
 
   </article>
   <!-- Presenter Notes -->
@@ -58,10 +68,83 @@
 
 <slide class="class" id="id" style="background:;">
   <hgroup>
-    <h2>Slide 2</h2>
+    <h2>App overview</h2>
   </hgroup>
   <article data-timings="">
-    
+    <p>This is what the app looks like:</p>
+
+<p><img src="overview.png" title="" alt="" style="display: block; margin: auto; width: 600px;" /></p>
+
+<p>The filtering options are in yellow boxes, results are in the blue ones. Small help snippets are available when hovering on the question marks in the top right corner of each box.</p>
+
+<p>A more thorough presentation page is also available via the sidebar.  </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Details</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The user can filter the data along three axes:</p>
+
+<ul>
+<li>the Harm Category: impact on public health and ecomomy</li>
+<li>the Event Types:
+
+<ul>
+<li>for clarity reasons, only the top 10 are listed (48 in total)</li>
+<li>the top 10 depends on the Harm Category</li>
+</ul></li>
+<li>the Year Range: any period between 1950 and 2011</li>
+</ul>
+
+<p>The displayed results are updated automatically based on the user&#39;s choices. For the year histogram, years outside of the selected range will be greyed out but still displayed.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Data Processing</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The main data processing is the same I used for the Reproducible Research project. More information about it can be found in the report I published on rPubs <a href="http://rpubs.com/paulwasit/weatherEventsUS">here</a>.</p>
+
+<p>It produces a dataframe that is still quite large (approx. 200k observations), as it keeps all harmful events. In order to quicken the plots rendering, I also went further &amp; created new dataframes for each Harm Category: they group all events sharing the same Event Type by state &amp; by year.</p>
+
+<p>These dataframes are perfectly suited to the plot rendering and are much smaller, with approx. 5k observations each.</p>
+
+<p>The large dataframe is only used for the Top 10 table, which is build using reasonably inexpensive computation.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Final comments &amp; Future improvements</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The full app is available on Github <a href="">here</a>. A few tricky/interesting facts:</p>
+
+<ul>
+<li>nPlot histogram bars can be colored individually by creating plot$params$data$color &lt;- c(hexColors), where plot &lt;- nPlot(...)</li>
+<li>rMaps are not responsive by default but it can be done via css (see my solution on Github)</li>
+<li>rCharts are not responsive by default, but it is possible to use this <a href="http://stackoverflow.com/questions/25371860/automatically-resize-rchart-in-shiny">SO trick</a>. The issue is that the custom width &amp; height are attributed to the .rChart class, so it is not possible to customize each rChart individually (at least to my knowledge)</li>
+</ul>
+
+<p>Possible improvements:</p>
+
+<ul>
+<li>create a focus by state when the user clicks on the US map</li>
+<li>add an additional histogram indicating the total harm per event type (it is not so hard, but due to rChart limitations on size mentioned above, I was not able to do it properly) </li>
+<li>the majority of events include GPS coordinates, so it could be possible to display their location on the map, as dots with varying radius based on their intensity</li>
+</ul>
+
   </article>
   <!-- Presenter Notes -->
 </slide>
@@ -72,14 +155,32 @@
     <ul>
       <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=1 title='Read-And-Delete'>
+        data-slide=1 title='Introduction'>
          1
       </a>
     </li>
     <li>
       <a href="#" target="_self" rel='tooltip' 
-        data-slide=2 title='Slide 2'>
+        data-slide=2 title='App overview'>
          2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Details'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Data Processing'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='Final comments &amp; Future improvements'>
+         5
       </a>
     </li>
   </ul>

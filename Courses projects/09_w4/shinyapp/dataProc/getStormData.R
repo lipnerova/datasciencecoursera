@@ -2,7 +2,7 @@ library(dplyr)
 library(pander)
 
 # read archive (takes a while)
-storm <- read.csv(".\\stormData.bz2")
+storm <- read.csv("..\\data\\stormData.bz2")
 
 # selecting fields relevant to the analysis
 stormSelect <- select (storm, 
@@ -132,5 +132,5 @@ for (harmType in c("Fatalities","Injuries","propDmg","cropDmg")) {
 rm (getTop10, addTop10, tableTop10, harmType)
 
 # saving the data frame
-saveRDS(stormClean, file="stormClean.rds")
-saveRDS(stormList, file="stormList.rds")
+saveRDS(stormClean, file="..\\..\\shinyapp\\data\\stormClean.rds")
+saveRDS(stormList, file="..\\..\\shinyapp\\data\\stormList.rds")

@@ -4,16 +4,23 @@ library(rCharts)
 library(rMaps)
 library(shinyjs) #used to hide some inputs
 library(shinyBS) #used for  tooltips
+library(markdown)
 
 header <- dashboardHeader(
   title = "StormReport"
 )
 
+sidebar <- dashboardSidebar(
+  sidebarMenu(
+    menuItem("Dashboard", tabName = "dashboard", icon = icon("dashboard")),
+    menuItem("Presentation", icon = icon("th"), tabName = "intro")
+  )
+)
+
 header$children[[2]]$children <-  tags$span("Storm", tags$b("Report"))
 
-
-body <- dashboardBody(
-  
+tab1 <- tabItem(tabName = "dashboard",
+                
   #enable shinyjs
   useShinyjs(),
   
@@ -177,10 +184,27 @@ body <- dashboardBody(
 
 
 
-         
+body <- dashboardBody(
+  
+  tabItems(
+    tab1,
+    
+    tabItem(tabName = "intro",
+      fluidRow(
+        column(width = 3),
+        column(width = 6,
+          includeMarkdown("introMD.md")
+        )
+      )
+    )
+  )
+)
+
+
+
 
 shinyUI(dashboardPage(
   header,
-  dashboardSidebar(disable = TRUE),
+  sidebar,
   body
 ))
