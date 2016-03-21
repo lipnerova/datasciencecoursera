@@ -10,8 +10,8 @@ options(shiny.port = 8000)
 # ------------------------------ PREPARING DATA --------------------------------------- #
 
 # load DB
-stormClean <- readRDS("./appdata/stormClean.rds")
-stormList <- readRDS("./appdata/stormList.rds")
+stormClean <- readRDS("./dataRep/stormClean.rds")
+stormList <- readRDS("./dataRep/stormList.rds")
 
 # harm types
 harmTypes <- c("Fatalities"="Fatalities", 
