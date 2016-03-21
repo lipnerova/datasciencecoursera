@@ -1,0 +1,8 @@
+name: shinyapp
+account: splat
+server: shinyapps.io
+bundleId: 399564
+url: https://splat.shinyapps.io/shinyapp/
+when: 1458524528.18574
+asMultiple: FALSE
+asStatic: FALSE

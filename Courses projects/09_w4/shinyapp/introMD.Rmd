@@ -1,0 +1,582 @@
+---
+title: "Impact of severe wheather events on public health and ecomomy in the US"
+author: "Sebastien Plat"
+output: 
+  html_document:
+    keep_md: yes
+    toc: yes
+---
+
+```{r setup, cache=FALSE, include=FALSE, message=FALSE}
+library(knitr)
+output <- opts_knit$get("rmarkdown.pandoc.to")
+if (output=="html") opts_chunk$set(fig.align='center')
+library(dplyr)
+library(ggplot2)
+library(reshape2)
+source(".\\dataProc\\decode.R")
+source("..\\..\\multiplot.R")
+```
+
+## Synopsis
+
+Storms and other **severe weather events** can cause both public health and economic problems for communities and municipalities. Many severe events can result in fatalities, injuries, and property damage. Preventing such outcomes to the extent possible is a key concern.
+
+This document will present the analysis of the U.S. National Oceanic and Atmospheric Administration's (NOAA) Storm Database, and its results regarding the following questions:
+
++ Across the US, which types of events are **most harmful** with respect to population health?
++ Across the US, which types of events have the **greatest economic consequences**?
+
+The answer will show:
+
++ the **Top10 Event Types** for **fatalities and injuries, property damage and crop damage**
++ their **average impact** when harmful
+
+The average impact will facilitate the **comparizon between Event Types with very different frequencies**.
+
+_Note: this analysis was first done for the Reproducible Research Project. Its full version with all the code has been published on [Rpubs](http://rpubs.com/paulwasit/weatherEventsUS)._
+
+
+
+## Loading Data
+
+We start by downloading the data & reading it.
+
+```{r, echo=FALSE, cache = TRUE}
+# download archive
+if (!dir.exists("data")) {
+  dir.create("data")
+}
+
+if (!file.exists("data\\stormData.bz2")) {
+  download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2",
+                "data\\stormData.bz2")
+}
+
+# read archive (takes a while)
+storm <- read.csv("data\\stormData.bz2")
+```
+
+A brief look at the data frame shows more than 900k observations and 37 variables.
+
+```{r, echo=FALSE}
+# first look at data
+#str(storm)
+```
+
+
+
+## Data Processing
+
+We want to keep only the observations and variables that are relevant for this analysis: event type, fatalities and damage.
+
+By looking at the documentation ([link](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf)), and especially section 2.7 p12, we can see there are two types of damage: property & crop. They are expressed with two variables:
+
++ DMP gives the amount
++ EXP gives the unit: thousands (K), millions (M) or billions (B)
+
+This leads us to select only the following variables:
+
+```{r, cache=TRUE}
+# creating a year variable
+storm$year <- factor(as.POSIXlt(strptime(as.character(storm$BGN_DATE), "%m/%d/%Y"))$year+1900)
+
+# selecting fields relevant to the analysis
+stormSelect <- select (storm, BGN_DATE, STATE, EVTYPE, FATALITIES, INJURIES, PROPDMG, PROPDMGEXP, CROPDMG, CROPDMGEXP, year)
+```
+
+### Cleaning damage costs
+
+Table 1 and Table 2 show that **the damage unit is not always properly mentioned**: we expect only K, M and B (see above).
+
+```{r, echo=FALSE}
+# units for property damages > 0 - expecting only K,M,B
+t <- table (stormSelect[stormSelect$PROPDMG > 0, ]$PROPDMGEXP)
+t
+
+# units for crop damages > 0 - expecting only K,M,B
+t <- table (stormSelect[stormSelect$CROPDMG > 0, ]$CROPDMGEXP)
+t
+```
+
+To adress this issue, we will:
+
++ consider **entries with incorrect damage units as having zero damage**
++ create new variables **prop_dmg** and **crop_dmg** that convert damages in USD
+
+```{r}
+# cleaning up property damages: we count them only if they have a proper unit
+stormSelect <- mutate (stormSelect, prop_dmg = ifelse(PROPDMGEXP == "b" | PROPDMGEXP == "B", PROPDMG*10^9, 
+                                               ifelse(PROPDMGEXP == "m" | PROPDMGEXP == "M", PROPDMG*10^6,
+                                               ifelse(PROPDMGEXP == "k" | PROPDMGEXP == "K", PROPDMG*10^3, 0))))
+
+# cleaning up crop damages: we count them only if they have a proper unit
+stormSelect <- mutate (stormSelect, crop_dmg = ifelse(CROPDMGEXP == "b" | CROPDMGEXP == "B", CROPDMG*10^9, 
+                                               ifelse(CROPDMGEXP == "m" | CROPDMGEXP == "M", CROPDMG*10^6,
+                                               ifelse(CROPDMGEXP == "k" | CROPDMGEXP == "K", CROPDMG*10^3, 0))))
+```
+
+### Filtering Data
+
+We will keep only the observations with either casualties or damage:
+
+```{r}
+# we drop all events that have neither fatalities/injuries nor damages
+stormSelectFilter <- filter (stormSelect, FATALITIES > 0 | 
+                                          INJURIES > 0 |
+                                          prop_dmg > 0 | 
+                                          crop_dmg > 0) %>% 
+                     select (BGN_DATE, STATE, EVTYPE, 
+                             FATALITIES, INJURIES,
+                             PROPDMG, PROPDMGEXP,  prop_dmg, 
+                             CROPDMG, CROPDMGEXP, crop_dmg, 
+                             year)
+
+# we drop all unsued levels
+stormSelectFilter <- droplevels (stormSelectFilter)
+
+# we convert all EVTYPE levels in uppercase
+levels(stormSelectFilter$EVTYPE) <- toupper(levels(stormSelectFilter$EVTYPE))
+```
+
+As shown below, our data frame is now much smaller, with only 250k observations:
+
+```{r, echo=FALSE}
+dim (stormSelectFilter)
+```
+
+### Cleaning outliers
+
+Fig. 1 shows the fatalities and damage reported for each recorded event:
+
+```{r, echo=FALSE, fig.width=11, cache=TRUE}
+# fatalities
+p1 = qplot(data=stormSelectFilter, x=year, y = FATALITIES) 
+p1 = p1 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p1 = p1 + scale_x_discrete(breaks = seq(1950, 2010, 10))
+p1 = p1 + ylab("Fatalities")
+
+# injuries
+p2 = qplot(data=stormSelectFilter, x=year, y = INJURIES) 
+p2 = p2 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p2 = p2 + scale_x_discrete(breaks = seq(1950, 2010, 10))
+p2 = p2 + ylab("Injuries")
+
+# property damages
+p3 = qplot(data=stormSelectFilter, x=year, y=prop_dmg) + geom_point()
+p3 = p3 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p3 = p3 + scale_x_discrete(breaks = seq(1950, 2010, 10))
+p3 = p3 + scale_y_continuous(breaks = seq(0, 1.2*10^11, 10^10), labels = seq(0,120,10))
+p3 = p3 + ylab("Property Damages (in Billion USD)")
+
+# crop damages
+p4 = qplot(data=stormSelectFilter, x=year, y=crop_dmg) + geom_point()
+p4 = p4 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p4 = p4 + scale_x_discrete(breaks = seq(1950, 2010, 10))
+p4 = p4 + scale_y_continuous(breaks = seq(0, 5*10^9, 10^9), labels = seq(0,5,1))
+p4 = p4 + ylab("Crop Damages (in Billion USD)")
+
+multiplot(p1,p2,p3,p4,cols=4, title = "Fig. 1: Fatalities & Damages per recorded event")
+```
+
+We clearly see some outliers. Let's investigate them.
+
+
+#### Fatalities
+
+```{r, echo=FALSE}
+# fatalities
+stormSelectFilter[which(stormSelectFilter$FATALITIES > 200), 
+                  c("BGN_DATE", "STATE", "EVTYPE", "FATALITIES")]
+```
+
+The deadliest recorded event is the **July 1995 Heat Wave in Chicago** ([link](https://en.wikipedia.org/wiki/1995_Chicago_heat_wave)).
+
+
+#### Injuries
+
+```{r, echo=FALSE}
+# Injuries
+stormSelectFilter[which(stormSelectFilter$INJURIES > 1000), 
+                  c("BGN_DATE", "STATE", "EVTYPE", "INJURIES")]
+```
+
+The recorded events with the most injuries are:
+
++ the **1953 Flint-Worcester tornado outbreak sequence** ([link](https://en.wikipedia.org/wiki/Flint%E2%80%93Worcester_tornado_outbreak_sequence))
++ the **1974 Super Outbreak** ([link](https://en.wikipedia.org/wiki/1974_Super_Outbreak))
++ the **1979 Red River Valley tornado outbreak** ([link](https://en.wikipedia.org/wiki/1979_Red_River_Valley_tornado_outbreak))
++ the **1994 Artic Outbreak** ([link](https://shaneholinde.wordpress.com/2014/01/07/remembering-januaryfebruary-1994-winters-tko/))
++ the **2011 tornado outbreak** ([link](https://en.wikipedia.org/wiki/May_21%E2%80%9326,_2011_tornado_outbreak_sequence))
+
+
+#### Property Damage
+
+```{r, echo=FALSE}
+# property damage
+stormSelectFilter[which(stormSelectFilter$prop_dmg >= 10*10^9), 
+                  c("BGN_DATE", "STATE", "EVTYPE", "PROPDMG", "PROPDMGEXP")]
+```
+
+The most costly events (**property damage**) are:
+
++ **Hurricane Katrina in 2005** ([link](https://en.wikipedia.org/wiki/Hurricane_Katrina)), identified as the costliest natural disaster in the History of the USA
++ **the flood of january 2006 in California**
+
+**The reported damage of the California flood will be considered a typo**, as it is estimated by other sources as approx. 300 Millions USD ([link](http://pubs.usgs.gov/of/2006/1182/)), and because it seems unreasonable to assume it cost 10 times more than Katrina.
+
+We will convert the damage as being **115 millions USD** instead:
+
+```{r}
+# converting billions to millions for the CA flood of 2006
+stormSelectFilter[which(stormSelectFilter$prop_dmg > 10^11),]$PROPDMGEXP <- "M"
+stormSelectFilter[which(stormSelectFilter$prop_dmg > 10^11),]$prop_dmg <- 115*10^6
+```
+
+
+#### Crop Damage
+
+```{r, echo=FALSE, results='asis'}
+# crop damage
+stormSelectFilter[which(stormSelectFilter$crop_dmg >= 10^9), 
+                  c("BGN_DATE", "STATE", "EVTYPE", "CROPDMG", "CROPDMGEXP")]
+```
+
+The most costly events (crop damage) are:
+
++ the **Great Flood of 1993** ([link](https://en.wikipedia.org/wiki/Great_Flood_of_1993))
++ the **Southeast Ice Storm of 1994** ([link](http://www.alabamawx.com/?p=5469))
++ **Hurricane Katrina in 2005**
++ a **severe drought in Texas in 2005-2006** ([link](http://twri.tamu.edu/publications/txh2o/fall-2011/timeline-of-droughts-in-texas/))
+
+
+
+### Cleaning Event Types
+
+The documentation stipulates that there are **48 Event Types** one can use to describe an event (section 7 - Event Types, p18). The events are largely reported in this normalized fashion, but there are also many cases where the guidelines are not fully respected.
+
+In an attempt to facilitate the reading of the results, we will **map all the events to the 48 Event Types** by using keywords and the following rules:
+
++ the **more precise classification** is listed **first** ("marine thunderstorm" before "thunderstorm", etc.)
++ the **deadliest / costliest events** are listed **first**, to catch events that could be affected to different Event Types ("Avalanche + Blizzard"" for example)
++ the few events without a clear Event Type will be **classified as "OTHER"**
+
+The resulting classification, as well as the details of the "decodeList" function, are listed in the Appendix.
+
+
+```{r, echo=FALSE}
+# EVTYPE list: EVTYPE levels (only 430 rows, much faster than working with the full table)
+EVTYPE_list <- data.frame(EVTYPE=levels(stormSelectFilter$EVTYPE))
+
+# normalizing event types using the Storm Data Event Table
+EVTYPE_list$Event_Type <- decodeList (EVTYPE_list$EVTYPE, "OTHER", list(
+                                      c("ASTRONOMICAL LOW TIDE"), "ASTRONOMICAL LOW TIDE",
+                                      c("AVALANCHE", "AVALANCE"), "AVALANCHE",
+                                      c("BLIZZARD"), "BLIZZARD",
+                                      c("COASTAL FLOOD", "COASTAL  FLOOD"), "COASTAL FLOOD",
+                                      c("LAKESHORE FLOOD"), "LAKESHORE FLOOD",
+                                      c("TORNADO", "TORNDAO"), "TORNADO",
+                                      c("TSUNAMI"), "TSUNAMI",
+                                      c("HURRICANE", "TYPHOON"), "HURRICANE/TYPHOON",
+                                      c("WATERSPOUT"), "WATERSPOUT",
+                                      c("STORM SURGE","STORM TIDE"), "STORM SURGE/TIDE",
+                                      c("MARINE THUNDESRSTORM", "MARINE TSTM"), "MARINE THUNDERSTORM WIND",
+                                      c("TSTM", "TUNDERSTORM", "THUNDERSTORM", "THUDERSTORM", "THUNDERTORM", "THUNERSTORM", "THUNDERESTORM", "THUNDEERSTORM", "THUNDERSTROM"), "THUNDERSTORM WIND",
+                                      c("ICE STORM"), "ICE STORM",
+                                      c("WINTER STORM"), "WINTER STORM",
+                                      c("WINTER WEATHER"), "WINTER WEATHER",
+                                      c("TROPICAL STORM"), "TROPICAL STORM",
+                                      c("TROPICAL DEPRESSION"), "TROPICAL DEPRESSION",
+                                      c("LANDSLIDE"), "LANDSLIDE",
+                                      c("DUST DEVIL"), "DUST DEVIL",
+                                      c("DUST STORM"), "DUST STORM",
+                                      c("DROUGHT"), "DROUGHT",
+                                      c("EXCESSIVE HEAT", "EXTREME HEAT", "RECORD HEAT", "UNSEASONABLY WARM"), "EXCESSIVE HEAT",
+                                      c("HEAT"), "HEAT",
+                                      c("EXTREME COLD", "RECORD COLD", "EXTREME WINDCHILL", "UNSEASONABLY COLD", "UNSEASONABLE COLD"), "EXTREME COLD/WIND CHILL",
+                                      c("COLD", "LOW TEMPERATURE"), "COLD/WIND CHILL",
+                                      c("FLASH FLOOD", "FLASHFLOOD"), "FLASH FLOOD",
+                                      c("FLOOD", "FLD"), "FLOOD",
+                                      c("MARINE HIGH WIND"), "MARINE HIGH WIND",
+                                      c("HIGH WIND"), "HIGH WIND",
+                                      c("MARINE HAIL"), "MARINE HAIL",
+                                      c("HAIL"), "HAIL",
+                                      c("HIGH SURF", "HEAVY SURF"), "HIGH SURF",
+                                      c("RIP CURRENT"), "RIP CURRENT",
+                                      c("SLEET"), "SLEET",
+                                      c("LIGHTNING", "LIGHTING", "LIGNTNING"), "LIGHTNING",
+                                      c("MARINE STRONG WIND"), "MARINE STRONG WIND",
+                                      c("STRONG WIND"), "STRONG WIND",
+                                      c("WINTER STORM"), "WINTER STORM",
+                                      c("FROST", "FREEZE"), "FROST/FREEZE",
+                                      c("HEAVY SNOW", "EXCESSIVE SNOW"), "HEAVY SNOW",
+                                      c("LAKE-EFFECT SNOW"), "LAKE-EFFECT SNOW",
+                                      c("FREEZING FOG"), "FREZZING FOG",
+                                      c("FOG"), "DENSE FOG",
+                                      c("HEAVY RAIN"), "HEAVY RAIN",
+                                      c("DEBRIS FLOW"), "DEBRIS FLOW",
+                                      c("DENSE SMOKE"), "DENSE SMOKE",
+                                      c("FUNNEL CLOUD"), "FUNNEL CLOUD",
+                                      c("SEICHE"), "SEICHE",
+                                      c("VOLCANIC ASH"), "VOLCANIC ASH",
+                                      c("WILDFIRE", "WILD/FOREST FIRE", "WILD FIRES", "WILDFIRES", "FOREST FIRES"), "WILDFIRE"))
+
+# merging the Event Type list with the main dataset
+stormSelectFilterGroup <- left_join(stormSelectFilter, EVTYPE_list, by="EVTYPE")
+
+# converting values into factors
+stormSelectFilterGroup$Event_Type <- factor(stormSelectFilterGroup$Event_Type)
+```
+
+
+
+## Results
+
+Now that our Data Processing is complete, we can focus on our two questions:
+
++ Across the US, which types of events are most harmful with respect to population health?
++ Across the US, which types of events have the greatest economic consequences?
+
+Table 3 to 6 show the Top 10 Event Types for the four paramaters we are interested in: Fatalities, Injuries, Property Damage & Crop Damage. Are included:
+
++ the number of recorded events with parameter > 0
++ the total for the period 1950-2011
++ the average for events with parameter > 0
+
+Fig. 2 sums up the three tables for easier reading.
+
+### Fatalities
+
+```{r, echo=FALSE}
+# group by event type
+stormFatalities <- as.data.frame(group_by(stormSelectFilterGroup, Event_Type) %>% 
+                                 summarize(countDeadly = length(which(FATALITIES > 0)),
+                                           Fatalities=sum(FATALITIES)))
+
+# identify top 10
+stormFatalities <- arrange(stormFatalities,desc(Fatalities))
+stormFatalities$Top10 <- ifelse(row(stormFatalities)<10,as.character(stormFatalities$Event_Type), "OTHER")[,1]
+
+# group the other event types as "OTHER"
+stormFatalitiesFinal <- as.data.frame(group_by(stormFatalities, Top10) %>% 
+                                      summarize(deadlyEvents = sum(countDeadly),
+                                                Fatalities=sum(Fatalities))) %>%
+                                      arrange(desc(Fatalities))
+
+# estimate avg when fatalities
+stormFatalitiesFinal$Average <- round(with(stormFatalitiesFinal, Fatalities/deadlyEvents),1)
+
+# move "OTHER" at the end
+stormFatalitiesFinal <- rbind (stormFatalitiesFinal[-which(stormFatalitiesFinal$Top10=="OTHER"), ],
+                               stormFatalitiesFinal[which(stormFatalitiesFinal$Top10=="OTHER"), ])
+rownames(stormFatalitiesFinal) <- NULL
+
+# sort factors by decr fatalities
+stormFatalitiesFinal$Top10 <- with(stormFatalitiesFinal, factor(Top10, levels=Top10[1:10]))
+
+stormFatalitiesFinal
+```
+
+### Injuries
+
+```{r, echo=FALSE}
+# group by event type
+stormInjuries <- as.data.frame(group_by(stormSelectFilterGroup, Event_Type) %>% 
+                                 summarize(countHarmful = length(which(INJURIES > 0)),
+                                           Injuries=sum(INJURIES)))
+
+# identify top 10
+stormInjuries <- arrange(stormInjuries,desc(Injuries))
+stormInjuries$Top10 <- ifelse(row(stormInjuries)<10,as.character(stormInjuries$Event_Type), "OTHER")[,1]
+
+# group the other event types as "OTHER"
+stormInjuriesFinal <- as.data.frame(group_by(stormInjuries, Top10) %>% 
+                                      summarize(harmfulEvents = sum(countHarmful),
+                                                Injuries=sum(Injuries))) %>%
+                                      arrange(desc(Injuries))
+
+# estimate avg when fatalities
+stormInjuriesFinal$Average <- round(with(stormInjuriesFinal, Injuries/harmfulEvents),1)
+
+# move "OTHER" at the end
+stormInjuriesFinal <- rbind (stormInjuriesFinal[-which(stormInjuriesFinal$Top10=="OTHER"), ],
+                               stormInjuriesFinal[which(stormInjuriesFinal$Top10=="OTHER"), ])
+rownames(stormInjuriesFinal) <- NULL
+
+# sort factors by decr fatalities
+stormInjuriesFinal$Top10 <- with(stormInjuriesFinal, factor(Top10, levels=Top10[1:10]))
+
+stormInjuriesFinal
+```
+
+### Property Damage
+
+```{r, echo=FALSE}
+# group by event type
+stormPropDmg <- as.data.frame(group_by(stormSelectFilterGroup, Event_Type) %>% 
+                              summarize(countPropDmg = length(which(prop_dmg > 0)),
+                                        prop_dmg=sum(prop_dmg)))
+
+# identify top 10
+stormPropDmg <- arrange(stormPropDmg,desc(prop_dmg))
+stormPropDmg$Top10 <- ifelse(row(stormPropDmg)<10,as.character(stormPropDmg$Event_Type), "OTHER")[,1]
+
+# group the other event types as "OTHER"
+stormPropDmgFinal <- as.data.frame(group_by(stormPropDmg, Top10) %>% 
+                                   summarize(costlyEvents = sum(countPropDmg),
+                                             prop_dmg=sum(prop_dmg)))%>%
+                                   arrange(desc(prop_dmg))
+
+# estimate avg when prop damage
+stormPropDmgFinal$avg <-round(with(stormPropDmgFinal, prop_dmg/costlyEvents),3)
+
+# move "OTHER" at the end
+stormPropDmgFinal <- rbind (stormPropDmgFinal[-which(stormPropDmgFinal$Top10=="OTHER"), ],
+                            stormPropDmgFinal[which(stormPropDmgFinal$Top10=="OTHER"), ])
+rownames(stormPropDmgFinal) <- NULL
+
+# convert damage in B and M
+stormPropDmgFinal$propertyDamage <- paste(format(round(stormPropDmgFinal$prop_dmg/10^9,1), nsmall=1), "B")
+stormPropDmgFinal$Average <- paste(format(round(stormPropDmgFinal$avg/10^6,1), nsmall=1), "M")
+
+# sort factors by decr damage
+stormPropDmgFinal$Top10 <- with(stormPropDmgFinal, factor(Top10, levels=Top10[1:10]))
+
+select(stormPropDmgFinal, -c(prop_dmg,avg))
+```
+
+### Crop Damage
+
+```{r, echo=FALSE}
+# crop damage
+# group by event type
+stormCropDmg <- as.data.frame(group_by(stormSelectFilterGroup, Event_Type) %>% 
+                              summarize(countCropDmg = length(which(crop_dmg > 0)),
+                                        crop_dmg=sum(crop_dmg)))
+# identify top 10
+stormCropDmg <- arrange(stormCropDmg,desc(crop_dmg))
+stormCropDmg$Top10 <- ifelse(row(stormCropDmg)<10,as.character(stormCropDmg$Event_Type), "OTHER")[,1]
+
+# group the other event types as "OTHER"
+stormCropDmgFinal <- as.data.frame(group_by(stormCropDmg, Top10) %>% 
+                                   summarize(costlyEvents = sum(countCropDmg),
+                                             crop_dmg=sum(crop_dmg))) %>%
+                                   arrange(desc(crop_dmg))
+
+
+# estimate avg when crop damage
+stormCropDmgFinal$avg <-round(stormCropDmgFinal$crop_dmg/stormCropDmgFinal$costlyEvents,3)
+
+# move "OTHER" at the end
+stormCropDmgFinal <- rbind (stormCropDmgFinal[-which(stormCropDmgFinal$Top10=="OTHER"), ],
+                            stormCropDmgFinal[which(stormCropDmgFinal$Top10=="OTHER"), ])
+rownames(stormCropDmgFinal) <- NULL
+
+# convert damage in B and M
+stormCropDmgFinal$cropDamage <- paste(format(round(stormCropDmgFinal$crop_dmg/10^9,1), nsmall=1), "B")
+stormCropDmgFinal$Average <- paste(format(round(stormCropDmgFinal$avg/10^6,1), nsmall=1), "M")
+
+# sort factors by decr damage
+stormCropDmgFinal$Top10 <- with(stormCropDmgFinal, factor(Top10, levels=Top10[1:10]))
+
+select(stormCropDmgFinal, -c(crop_dmg,avg))
+```
+
+\  
+
+## Visual Recap and conclusion
+
+```{r, echo=FALSE}
+# fatalities graph
+p1 = ggplot(stormFatalitiesFinal, aes(x=Top10, y=Fatalities)) 
+p1 = p1 + geom_point(aes(colour=Average, size=Average))
+
+p1 = p1 + scale_size(range=c(1,10))
+p1 = p1 + guides(colour=guide_legend(), size = guide_legend())
+
+p1 = p1 + guides(size = guide_legend(title.position = "top"))
+p1 = p1 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p1 = p1 + theme(legend.position="bottom", plot.title=element_text(face='italic', vjust=2))
+
+p1 = p1 + ggtitle ("Fatalities") 
+p1 = p1  + xlab("") + ylab("Total Fatalities")
+```
+
+```{r, echo=FALSE}
+# injuries graph
+p2 = ggplot(stormInjuriesFinal, aes(x=Top10, y=Injuries)) 
+p2 = p2 + geom_point(aes(colour=Average, size=Average))
+
+p2 = p2 + scale_size(range=c(1,10))
+p2 = p2 + guides(colour=guide_legend(), size = guide_legend())
+
+p2 = p2 + guides(size = guide_legend(title.position = "top"))
+p2 = p2 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p2 = p2 + theme(legend.position="bottom", plot.title=element_text(face='italic', vjust=2))
+
+p2 = p2 + ggtitle ("Injuries") 
+p2 = p2  + xlab("") + ylab("Total Injuries")
+```
+
+```{r, echo=FALSE}
+# property damage graph
+p3 = ggplot(stormPropDmgFinal, aes(x=Top10, y=prop_dmg/10^9))
+p3 = p3 + geom_point(aes(colour = avg, size=avg))
+
+p3 = p3 + scale_colour_continuous(breaks = c(1e8, 2e8, 3e8), labels = c("100M", "200M", "300M"))
+p3 = p3 + scale_size_continuous(breaks = c(1e8, 2e8, 3e8), labels = c("100M", "200M", "300M"), range=c(1,10))
+
+p3 = p3 + guides(colour=guide_legend(title = "Average", title.position = "top"), 
+                 size = guide_legend(title = "Average", title.position = "top"))
+
+p3 = p3 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p3 = p3 + theme(legend.position="bottom", plot.title=element_text(face='italic', vjust=2))
+
+p3 = p3 + ggtitle ("Property Damage") 
+p3 = p3 + xlab("") + ylab("Total Property Damage (in Billions USD)")
+```
+
+```{r}
+# crop damage graph
+p4 = ggplot(stormCropDmgFinal, aes(x=Top10, y=crop_dmg/10^9))
+p4 = p4 + geom_point(aes(colour = avg, size=avg)) 
+
+p4 = p4 + scale_colour_continuous(breaks = c(5e7, 1e8, 1.5e8, 2e8), labels = c("50M", "100M", "150M", "200M"))
+p4 = p4 + scale_size_continuous(breaks = c(5e7, 1e8, 1.5e8, 2e8), labels = c("50M", "100M", "150M", "200M"), range=c(1,10))
+
+p4 = p4 + guides(colour=guide_legend(title = "Average", title.position = "top"), 
+                 size = guide_legend(title = "Average", title.position = "top"))
+
+p4 = p4 + theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+p4 = p4 + theme(legend.position="bottom", plot.title=element_text(face='italic', vjust=2))
+
+p4 = p4 + ggtitle ("Crop Damage")
+p4 = p4 + xlab("") + ylab("Total Crop Damage (in Billions USD)")
+```
+
+```{r, echo=FALSE, fig.width=11}
+multiplot (p1,p2,p3,p4, cols=4, title="Fig. 2: Fatalities, Injuries & Damage per Event Type, 1950-2011")
+```
+
+Fig. 2 shows that:
+
++ **Fatalities & Injuries**
+    + Tornadoes are the leading cause
+    + But on average, excessive heat is more dangerous
++ **Property damage**
+    + Hurricanes are the leading cause
+    + And on average, they are the most dangerous
++ **Crop damage**
+    + Drought are the leading cause
+    + But on average, ice storms are the most dangerous
+
+_Note: averages are calculated as total / number of events with paramater > 0._
+
+The discrepancies between total and average are explained by the fact that some events are much more likely to accur than others.
+
+Final comments:
+
++ Averages could have been calculated as total / number of events, but it is not clear what triggers a report for events without damage nor casualties. It seems that thunderstorms are reported much more frequently than other events (maybe because they are easier to spot ?) so such a ratio could induce a bias.
++ Some event types in "OTHER" may have an average higher than the top10, but overall they have a much smaller impact. So it seemed relevant no to highlight them
+ 
+
