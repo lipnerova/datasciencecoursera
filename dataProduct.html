@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Exploring the Storm Database</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Exploring the Storm Database">
+  <meta name="author" content="Sebastien Plat">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Exploring the Storm Database</h1>
+    <h2>Revisiting the Reproducible Research project</h2>
+    <p>Sebastien Plat<br/></p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Introduction</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The idea for this Shiny app came from the Reproducible Research project:</p>
+
+<ul>
+<li>measure the impact of severe wheather events on public health and ecomomy in the US</li>
+<li>based on the analysis of the USA Storm Database</li>
+</ul>
+
+<p>This app aims to provide a <strong>visual exploration of the USA Storm Database</strong>:</p>
+
+<ul>
+<li>impact of severe wheather events by state / by year</li>
+<li>list of the most impactful events </li>
+</ul>
+
+<p>The user should also be able offered several filtering options to navigate the Database content more easily.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>App overview</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>This is what the app looks like:</p>
+
+<p><img src="overview.png" title="" alt="" style="display: block; margin: auto; width: 600px;" /></p>
+
+<p>The filtering options are in yellow boxes, results are in the blue ones. Small help snippets are available when hovering on the question marks in the top right corner of each box.</p>
+
+<p>A more thorough presentation page is also available via the sidebar.  </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Details</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The user can filter the data along three axes:</p>
+
+<ul>
+<li>the Harm Category: impact on public health and ecomomy</li>
+<li>the Event Types:
+
+<ul>
+<li>for clarity reasons, only the top 10 are listed (48 in total)</li>
+<li>the top 10 depends on the Harm Category</li>
+</ul></li>
+<li>the Year Range: any period between 1950 and 2011</li>
+</ul>
+
+<p>The displayed results are updated automatically based on the user&#39;s choices. For the year histogram, years outside of the selected range will be greyed out but still displayed.</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>Final comments &amp; Future improvements</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>The full app is available on Github <a href="">here</a>. A few tricky/interesting facts:</p>
+
+<ul>
+<li>nPlot histogram bars can be colored individually by creating plot$params$data$color &lt;- c(hexColors), where plot &lt;- nPlot(...)</li>
+<li>rMaps are not responsive by default but it can be done via css (see my solution on Github)</li>
+<li>rCharts are not responsive by default, but it is possible to use this <a href="http://stackoverflow.com/questions/25371860/automatically-resize-rchart-in-shiny">SO trick</a>. The issue is that the custom width &amp; height are attributed to the .rChart class, so it is not possible to customize each rChart individually (at least to my knowledge)</li>
+</ul>
+
+<p>Possible improvements:</p>
+
+<ul>
+<li>create a focus by state when the user clicks on the US map</li>
+<li>add an additional histogram indicating the total harm per event type (it is not so hard, but due to rChart limitations on size mentioned above, I was not able to do it properly) </li>
+<li>the majority of events include GPS coordinates, so it could be possible to display their location on the map, as dots with varying radius based on their intensity</li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Introduction'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='App overview'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Details'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Final comments &amp; Future improvements'>
+         4
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
