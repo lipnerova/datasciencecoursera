@@ -1,7 +1,7 @@
-The script in the `metrotransit-data/` directory will fetch schedule data for the Twin Cities Metro Transit. This data is updated weekly.
 
-The 00-fetch-data.R script should be executed in the `metrotransit-data/` directory. It fetches the data and saves some of the tables as .rds files. The bus app will read in the .rds files for route information.
+The raw USA Storm Database has not been uploaded here. It can be downloaded [here](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2).
 
-Information about schedule data: http://datafinder.org/metadata/transit_schedule_google_feed.html
+The inspiration for this app is the Reproducible Research project (course 05 of the Coursera Specialization). 
+Details can be found in the report I published on rPubs [here](http://rpubs.com/paulwasit/weatherEventsUS).
 
-Data format reference: https://developers.google.com/transit/gtfs/reference?csw=1
+The app is running on shinyapps.io [here](https://splat.shinyapps.io/stormReport/).
